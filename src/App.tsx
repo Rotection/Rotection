@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import Papa from 'papaparse';
-import { Shield, Search } from 'lucide-react';
+import { Shield, Search, Star, TrendingUp, Users, CheckCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { GameCard } from './components/GameCard';
@@ -8,78 +8,73 @@ import { GameDetails } from './components/GameDetails';
 import { SubmitGameForm } from './components/SubmitGameForm';
 import { FeaturesSection } from './components/FeaturesSection';
 import { DiscordRedirect } from './components/DiscordRedirect';
-import { motion, AnimatePresence } from 'motion/react';
 
 type Game = {
   id: string;
   name: string;
-  creators: string;
+  developer: string;
+  thumbnail: string;
+  safetyScore: number;
+  ageRating: string;
+  totalRatings: string;
+  verified: boolean;
   description: string;
-  ageGroup: string;
   category: string;
-  gameLink: string;
   honesty: number;
   safety: number;
   fairness: number;
   ageAppropriate: number;
-  ratingsCount: number;
-  thumbnail: string;
-  safetyScore: number;
-  verified: boolean;
 };
 
 type View = 'home' | 'browse' | 'submit' | 'game-details';
 
 export default function App() {
-  const [currentView, setCurrentView] = useState<View>('home');
   const [games, setGames] = useState<Game[]>([]);
+  const [currentView, setCurrentView] = useState<View>('home');
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSubmitDiscord, setShowSubmitDiscord] = useState(false);
-  const [loading, setLoading] = useState(true);
 
-  // CSV URL from your published Google Sheet
-  const csvUrl =
-    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQdMlcR44cKlhuBXWvwsKGEhwg5Mdx6yuVPGjjcuFIvVM0h4r1FGbp9uyXuCpzoqYomZQsmjrgo02WD/pub?output=csv";
-
+  // Fetch and parse CSV
   useEffect(() => {
-    Papa.parse(csvUrl, {
-      download: true,
-      header: true,
-      skipEmptyLines: true,
-      complete: (results) => {
-        const data = results.data as any[];
-        const parsed: Game[] = data.map((row, index) => ({
-          id: index.toString(),
-          name: row["Game Name"] || "",
-          creators: row["Creators"] || "",
-          description: row["Description"] || "",
-          ageGroup: row["Age Group"] || "",
-          category: row["Category"] || "",
-          gameLink: row["Game Link"] || "",
-          honesty: Number(row["Honesty"]) || 0,
-          safety: Number(row["Safety"]) || 0,
-          fairness: Number(row["Fairness"]) || 0,
-          ageAppropriate: Number(row["Age-appropriate"]) || 0,
-          ratingsCount: Number(row["Ratings"]) || 0,
-          thumbnail: row["Thumbnail"] || "",
-          safetyScore: Number(row["Safety Score"]) || 0,
-          verified: row["Verified"]?.toLowerCase() === "true",
-        }));
-        setGames(parsed);
-        setLoading(false);
-      },
-      error: (err) => {
-        console.error("Error parsing CSV:", err);
-        setLoading(false);
-      },
+    let Papa: any;
+    import('papaparse').then((module) => {
+      Papa = module.default;
+      Papa.parse(
+        'https://docs.google.com/spreadsheets/d/e/2PACX-1vQdMlcR44cKlhuBXWvwsKGEhwg5Mdx6yuVPGjjcuFIvVM0h4r1FGbp9uyXuCpzoqYomZQsmjrgo02WD/pub?output=csv',
+        {
+          download: true,
+          header: true,
+          skipEmptyLines: true,
+          complete: (results) => {
+            const parsedGames: Game[] = results.data.map((row: any, index: number) => ({
+              id: String(index),
+              name: row['Game Name'] || '',
+              developer: row['Creators'] || '',
+              description: row['Description'] || '',
+              category: row['Category'] || '',
+              thumbnail: row['Thumbnail'] || '',
+              honesty: Number(row['Honesty'] || 0),
+              safety: Number(row['Safety'] || 0),
+              fairness: Number(row['Fairness'] || 0),
+              ageAppropriate: Number(row['Age-appropriate'] || 0),
+              safetyScore: Number(row['Safety Score'] || 0),
+              ageRating: row['Age Group'] || '',
+              totalRatings: row['Ratings'] || '0',
+              verified: row['Verified']?.toLowerCase() === 'true',
+            }));
+            setGames(parsedGames);
+          },
+        }
+      );
     });
   }, []);
 
-  const filteredGames = games.filter((game) =>
-    game.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    game.creators.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    game.category.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredGames = games.filter(
+    (game) =>
+      game.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      game.developer.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      game.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleGameClick = (game: Game) => {
@@ -98,11 +93,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white">
-      <Header 
-        currentView={currentView} 
-        onNavigate={setCurrentView}
-        onSubmitGame={() => setShowSubmitDiscord(true)} 
-      />
+      <Header currentView={currentView} onNavigate={setCurrentView} onSubmitGame={() => setShowSubmitDiscord(true)} />
 
       <AnimatePresence mode="wait">
         {currentView === 'home' && (
@@ -112,7 +103,13 @@ export default function App() {
 
             <section className="py-16 px-4">
               <div className="max-w-7xl mx-auto">
-                <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-center mb-12">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6 }}
+                  className="text-center mb-12"
+                >
                   <h2 className="text-purple-600 mb-4">
                     <Shield className="inline-block w-10 h-10 mr-2" />
                     Featured Safe Games
@@ -120,20 +117,27 @@ export default function App() {
                   <p className="text-gray-600">These games have been verified by Rotection and loved by players like you!</p>
                 </motion.div>
 
-                {loading ? (
-                  <p className="text-gray-500">Loading games...</p>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                    {filteredGames.slice(0, 3).map((game, index) => (
-                      <motion.div key={game.id} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1, duration: 0.5 }}>
-                        <GameCard game={game} onClick={() => handleGameClick(game)} />
-                      </motion.div>
-                    ))}
-                  </div>
-                )}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                  {filteredGames.slice(0, 3).map((game, index) => (
+                    <motion.div
+                      key={game.id}
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.1, duration: 0.5 }}
+                    >
+                      <GameCard game={game} onClick={() => handleGameClick(game)} />
+                    </motion.div>
+                  ))}
+                </div>
 
                 <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.4, duration: 0.5 }} className="text-center">
-                  <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setCurrentView('browse')} className="bg-purple-600 text-white px-8 py-3 rounded-full hover:bg-purple-700 transition-colors">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setCurrentView('browse')}
+                    className="bg-purple-600 text-white px-8 py-3 rounded-full hover:bg-purple-700 transition-colors"
+                  >
                     Browse All Verified Games
                   </motion.button>
                 </motion.div>
@@ -148,7 +152,7 @@ export default function App() {
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mb-8">
                 <h1 className="text-purple-600 mb-4">Browse Verified Games</h1>
                 <div className="relative max-w-2xl">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <input
                     type="text"
                     placeholder="Search games, developers, or categories..."
@@ -159,17 +163,24 @@ export default function App() {
                 </div>
               </motion.div>
 
-              {loading ? (
-                <p className="text-gray-500">Loading games...</p>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredGames.map((game) => (
-                    <GameCard key={game.id} game={game} onClick={() => handleGameClick(game)} />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <AnimatePresence mode="popLayout">
+                  {filteredGames.map((game, index) => (
+                    <motion.div
+                      key={game.id}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ delay: index * 0.05, duration: 0.3 }}
+                      layout
+                    >
+                      <GameCard game={game} onClick={() => handleGameClick(game)} />
+                    </motion.div>
                   ))}
-                </div>
-              )}
+                </AnimatePresence>
+              </div>
 
-              {!loading && filteredGames.length === 0 && (
+              {filteredGames.length === 0 && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} className="text-center py-12">
                   <p className="text-gray-500">No games found matching your search.</p>
                 </motion.div>
@@ -193,16 +204,16 @@ export default function App() {
 
       <footer className="bg-purple-900 text-white py-8 px-4">
         <div className="max-w-7xl mx-auto text-center">
-          <Shield className="w-8 h-8 mr-2 inline-block" />
-          <span className="text-xl">Rotection</span>
-          <p className="text-purple-200 mt-4">Making Roblox safer, one verified game at a time.</p>
-          <p className="text-purple-300 text-sm mt-2">© 2025 Rotection</p>
+          <div className="flex items-center justify-center mb-4">
+            <Shield className="w-8 h-8 mr-2" />
+            <span className="text-xl">Rotection</span>
+          </div>
+          <p className="text-purple-200 mb-4">Making Roblox safer, one verified game at a time.</p>
+          <p className="text-purple-300 text-sm">© 2025 Rotection. Helping players find safe and fun games.</p>
         </div>
       </footer>
 
-      {showSubmitDiscord && (
-        <DiscordRedirect action="submit your game" onBack={() => setShowSubmitDiscord(false)} />
-      )}
+      {showSubmitDiscord && <DiscordRedirect action="submit your game" onBack={() => setShowSubmitDiscord(false)} />}
     </div>
   );
 }
