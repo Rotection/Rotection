@@ -48,10 +48,10 @@ just facts and scores from users.
 
 ## Development Status
 
-- Front-end: in progress
-- Discord rating system: prototyping
-- AI parsing: planned
-- Database: planned deployment
+- Front-end: done
+- Discord rating system: debugging
+- AI parsing: in progress
+- Database: done
 
 ## Note to Contributors
 
