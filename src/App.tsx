@@ -30,6 +30,25 @@ const verifiedGames = [
     category: 'Party & Casual'
   },
 
+    {
+    id: '2',
+    name: 'Prophecy Battle Arena',
+    developer: '@GoldenObscurity',
+    thumbnail: 'https://tr.rbxcdn.com/180DAY-f686b29c5acc0a09de9c8edb5eaddfd6/768/432/Image/Webp/noFilter',
+    safetyScore: 90,
+    ageRating: '9+',
+    ratings: {
+      honesty: 5,
+      safety: 5,
+      fairness: 4,
+      ageAppropriate: 4
+    },
+    totalRatings: '1',
+    verified: true,
+    description: 'Prophecy is a PvP round based battleground game. Choose from up to 12 different custom characters, and fight to the death!',
+    category: 'Action RPG'
+  },
+
 ];
 
 type View = 'home' | 'browse' | 'submit' | 'game-details';
