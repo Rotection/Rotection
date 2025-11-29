@@ -26,10 +26,7 @@ const verifiedGames = [
     },
     totalRatings: 'Staff',
     verified: true,
-    description: 'Speedsters Sandbox.
-
-Find universal skins around the map from diffrent games/animes/shows etc.
-race other players and have fun!',
+    description: 'Speedsters Sandbox.\n\nFind universal skins around the map from different games/animes/shows etc.\nrace other players and have fun!',
     category: 'Sandbox'
   },
   
