@@ -9,6 +9,27 @@ import { FeaturesSection } from './components/FeaturesSection';
 import { DiscordRedirect } from './components/DiscordRedirect';
 import { motion, AnimatePresence } from 'motion/react';
 
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./Home";
+import GamePage from "./GamePage";
+import Header from "./components/Header";
+
+export default function App() {
+    return (
+        <Router>
+            <div className="app-container">
+                <Header />   {/* always visible */}
+                
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/:id" element={<GamePage />} />
+                </Routes>
+            </div>
+        </Router>
+    );
+}
+
+
 // Mock data for verified games
 const verifiedGames = [
       {
