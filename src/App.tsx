@@ -11,28 +11,19 @@ import { motion, AnimatePresence } from 'motion/react';
 
 // Mock data for verified games
 const verifiedGames = [
-      {
+  {
     id: '101411193179895',
     name: '[ METALLIX ] Speedsters Sandbox',
     developer: 'Speedsters Sandbox',
     thumbnail: 'https://tr.rbxcdn.com/180DAY-bf6e00c4f61b35b36ea92d828e4c3232/768/432/Image/Webp/noFilter',
     safetyScore: 90,
     ageRating: '5+',
-    ratings: {
-      honesty: 5,
-      safety: 4,
-      fairness: 4,
-      ageAppropriate: 5
-    },
+    ratings: { honesty: 5, safety: 4, fairness: 4, ageAppropriate: 5 },
     totalRatings: 'Staff',
     verified: true,
-    description: `Speedsters Sandbox.
-
-Find universal skins around the map from different games/animes/shows etc.
-race other players and have fun!`,
-    category: 'Sandbox'
+    description: `Speedsters Sandbox.\nFind universal skins around the map from different games/animes/shows etc.\nrace other players and have fun!`,
+    category: 'Sandbox',
   },
-  
   {
     id: '2',
     name: 'Pilgrammed',
@@ -40,37 +31,25 @@ race other players and have fun!`,
     thumbnail: 'https://tr.rbxcdn.com/180DAY-1985fb1fa6534213463d7814f3958298/768/432/Image/Webp/noFilter',
     safetyScore: 80,
     ageRating: '9+',
-    ratings: {
-      honesty: 5,
-      safety: 4,
-      fairness: 3,
-      ageAppropriate: 4
-    },
+    ratings: { honesty: 5, safety: 4, fairness: 3, ageAppropriate: 4 },
     totalRatings: 1,
     verified: false,
     description: 'Pilgrammed is an open-world RPG game. You can craft guns and armor.',
-    category: 'Party & Casual'
+    category: 'Party & Casual',
   },
-
-    {
+  {
     id: '3',
     name: 'Prophecy Battle Arena',
     developer: '@GoldenObscurity',
     thumbnail: 'https://tr.rbxcdn.com/180DAY-f686b29c5acc0a09de9c8edb5eaddfd6/768/432/Image/Webp/noFilter',
     safetyScore: 90,
     ageRating: '9+',
-    ratings: {
-      honesty: 5,
-      safety: 5,
-      fairness: 4,
-      ageAppropriate: 4
-    },
+    ratings: { honesty: 5, safety: 5, fairness: 4, ageAppropriate: 4 },
     totalRatings: 1,
     verified: true,
     description: 'Prophecy is a PvP round based battleground game. Choose from up to 12 different custom characters, and fight to the death!',
-    category: 'Action RPG'
+    category: 'Action RPG',
   },
-
 ];
 
 type View = 'home' | 'browse' | 'submit' | 'game-details';
@@ -81,10 +60,12 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showSubmitDiscord, setShowSubmitDiscord] = useState(false);
 
-  const filteredGames = verifiedGames.filter(game =>
-    game.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    game.developer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    game.category.toLowerCase().includes(searchQuery.toLowerCase())
+  // Filtered games based on search
+  const filteredGames = verifiedGames.filter(
+    game =>
+      game.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      game.developer.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      game.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleGameClick = (game: typeof verifiedGames[0]) => {
@@ -104,12 +85,14 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white">
-      <Header 
-        currentView={currentView} 
+      {/* HEADER ALWAYS VISIBLE */}
+      <Header
+        currentView={currentView}
         onNavigate={setCurrentView}
         onSubmitGame={() => setShowSubmitDiscord(true)}
       />
-      
+
+      {/* MAIN CONTENT */}
       <AnimatePresence mode="wait">
         {currentView === 'home' && (
           <motion.div
@@ -120,100 +103,43 @@ export default function App() {
             transition={{ duration: 0.3 }}
           >
             <Hero onGetStarted={() => setCurrentView('browse')} />
-            
             <FeaturesSection />
 
-            {/* Featured Games Section */}
+            {/* Featured Games */}
             <section className="py-16 px-4">
-              <div className="max-w-7xl mx-auto">
-                <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6 }}
-                  className="text-center mb-12"
-                >
-                  <h2 className="text-purple-600 mb-4">
-                    <Shield className="inline-block w-10 h-10 mr-2" />
-                    Featured Safe Games
-                  </h2>
-                  <p className="text-gray-600">
-                    These games have been verified by Rotection and loved by players like you!
-                  </p>
-                </motion.div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                  {verifiedGames.slice(0, 3).map((game, index) => (
-                    <motion.div
-                      key={game.id}
-                      initial={{ opacity: 0, y: 30 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: index * 0.1, duration: 0.5 }}
-                    >
-                      <GameCard 
-                        game={game} 
-                        onClick={() => handleGameClick(game)}
-                      />
-                    </motion.div>
-                  ))}
-                </div>
-
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.4, duration: 0.5 }}
-                  className="text-center"
-                >
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setCurrentView('browse')}
-                    className="bg-purple-600 text-white px-8 py-3 rounded-full hover:bg-purple-700 transition-colors"
-                  >
-                    Browse All Verified Games
-                  </motion.button>
-                </motion.div>
+              <div className="max-w-7xl mx-auto text-center mb-12">
+                <h2 className="text-purple-600 mb-4">
+                  <Shield className="inline-block w-10 h-10 mr-2" />
+                  Featured Safe Games
+                </h2>
+                <p className="text-gray-600">
+                  These games have been verified by Rotection and loved by players like you!
+                </p>
               </div>
-            </section>
 
-            {/* For Parents Section */}
-            <section className="py-16 px-4 bg-purple-100">
-              <div className="max-w-4xl mx-auto text-center">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6 }}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                {verifiedGames.slice(0, 3).map((game, index) => (
+                  <motion.div
+                    key={game.id}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1, duration: 0.5 }}
+                  >
+                    <GameCard game={game} onClick={() => handleGameClick(game)} />
+                  </motion.div>
+                ))}
+              </div>
+
+              <div className="text-center">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setCurrentView('browse')}
+                  className="bg-purple-600 text-white px-8 py-3 rounded-full hover:bg-purple-700 transition-colors"
                 >
-                  <h2 className="text-purple-600 mb-4">For Parents</h2>
-                  <p className="text-gray-700 mb-6">
-                    Rotection helps you make sure your kids are playing safe, honest, and age-appropriate games. 
-                    Every verified game has been reviewed by our moderators and rated by the community.
-                  </p>
-                </motion.div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {[
-                    { icon: Shield, title: 'Safety First', description: 'All verified games meet our strict safety standards' },
-                    { icon: CheckCircle, title: 'Age Ratings', description: 'Clear age ratings help you choose the right games' },
-                    { icon: Users, title: 'Community Reviews', description: 'Real players share honest feedback' }
-                  ].map((item, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 30 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: index * 0.15, duration: 0.5 }}
-                      whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                      className="bg-white p-6 rounded-lg"
-                    >
-                      <item.icon className="w-12 h-12 text-purple-600 mx-auto mb-4" />
-                      <h3 className="mb-2">{item.title}</h3>
-                      <p className="text-gray-600">{item.description}</p>
-                    </motion.div>
-                  ))}
-                </div>
+                  Browse All Verified Games
+                </motion.button>
               </div>
             </section>
           </motion.div>
@@ -229,24 +155,16 @@ export default function App() {
             className="py-12 px-4 min-h-screen"
           >
             <div className="max-w-7xl mx-auto">
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="mb-8"
-              >
-                <h1 className="text-purple-600 mb-4">Browse Verified Games</h1>
-                <div className="relative max-w-2xl">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type="text"
-                    placeholder="Search games, developers, or categories..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 rounded-full border-2 border-purple-200 focus:border-purple-600 focus:outline-none transition-all"
-                  />
-                </div>
-              </motion.div>
+              <div className="mb-8 relative max-w-2xl mx-auto">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Search games, developers, or categories..."
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 rounded-full border-2 border-purple-200 focus:border-purple-600 focus:outline-none transition-all"
+                />
+              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <AnimatePresence mode="popLayout">
@@ -259,24 +177,16 @@ export default function App() {
                       transition={{ delay: index * 0.05, duration: 0.3 }}
                       layout
                     >
-                      <GameCard 
-                        game={game} 
-                        onClick={() => handleGameClick(game)}
-                      />
+                      <GameCard game={game} onClick={() => handleGameClick(game)} />
                     </motion.div>
                   ))}
                 </AnimatePresence>
               </div>
 
               {filteredGames.length === 0 && (
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5 }}
-                  className="text-center py-12"
-                >
-                  <p className="text-gray-500">No games found matching your search.</p>
-                </motion.div>
+                <div className="text-center py-12 text-gray-500">
+                  No games found matching your search.
+                </div>
               )}
             </div>
           </motion.section>
@@ -325,10 +235,7 @@ export default function App() {
 
       {/* Submit Game Discord Redirect */}
       {showSubmitDiscord && (
-        <DiscordRedirect
-          action="submit your game"
-          onBack={() => setShowSubmitDiscord(false)}
-        />
+        <DiscordRedirect action="submit your game" onBack={() => setShowSubmitDiscord(false)} />
       )}
     </div>
   );
