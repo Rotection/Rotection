@@ -1,13 +1,58 @@
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Shield, Menu, X, Moon, Sun, User } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Shield, Menu, X, Moon, Sun, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/ThemeProvider";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
   const { theme, setTheme } = useTheme();
   const location = useLocation();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast({ 
+        title: "Error", 
+        description: "Failed to logout", 
+        variant: "destructive" 
+      });
+    } else {
+      toast({ 
+        title: "Logged out", 
+        description: "You have been successfully logged out." 
+      });
+      navigate("/");
+    }
+  };
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -66,12 +111,29 @@ export function Navbar() {
             </Button>
           </Link>
 
-          <Link to="/auth">
-            <Button className="rounded-full gap-2">
-              <User className="h-4 w-4" />
-              Login
-            </Button>
-          </Link>
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="rounded-full gap-2">
+                  <User className="h-4 w-4" />
+                  {user.user_metadata?.username || user.email?.split('@')[0]}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleLogout} className="gap-2">
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Link to="/auth">
+              <Button className="rounded-full gap-2">
+                <User className="h-4 w-4" />
+                Login
+              </Button>
+            </Link>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -122,12 +184,26 @@ export function Navbar() {
                   Submit Game
                 </Button>
               </Link>
-              <Link to="/auth" onClick={() => setIsOpen(false)}>
-                <Button className="w-full rounded-full gap-2">
-                  <User className="h-4 w-4" />
-                  Login
+              {user ? (
+                <Button 
+                  onClick={() => {
+                    handleLogout();
+                    setIsOpen(false);
+                  }} 
+                  className="w-full rounded-full gap-2"
+                  variant="destructive"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
                 </Button>
-              </Link>
+              ) : (
+                <Link to="/auth" onClick={() => setIsOpen(false)}>
+                  <Button className="w-full rounded-full gap-2">
+                    <User className="h-4 w-4" />
+                    Login
+                  </Button>
+                </Link>
+              )}
             </div>
           </nav>
         </div>
