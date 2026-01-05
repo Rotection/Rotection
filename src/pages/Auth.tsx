@@ -132,9 +132,22 @@ const Auth = () => {
         }
       }
     } catch (error: any) {
+      // Map error types to safe, user-friendly messages without exposing implementation details
+      let userMessage = "Something went wrong. Please try again.";
+      
+      if (error.message?.includes('unique') || error.message?.includes('duplicate')) {
+        userMessage = "This information is already in use. Please try different details.";
+      } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
+        userMessage = "Network error. Please check your connection and try again.";
+      } else if (error.message?.includes('timeout')) {
+        userMessage = "Request timed out. Please try again.";
+      } else if (error.message?.includes('rate') || error.message?.includes('limit')) {
+        userMessage = "Too many attempts. Please wait a moment and try again.";
+      }
+      
       toast({
         title: "Error",
-        description: error.message || "Something went wrong. Please try again.",
+        description: userMessage,
         variant: "destructive",
       });
     } finally {
