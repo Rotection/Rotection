@@ -1,8 +1,8 @@
-@import url('@fontsource/schibsted-grotesk/400.css');
-@import url('@fontsource/schibsted-grotesk/500.css');
-@import url('@fontsource/schibsted-grotesk/600.css');
-@import url('@fontsource/schibsted-grotesk/700.css');
-@import url('@fontsource/schibsted-grotesk/800.css');
+@import url("@fontsource/schibsted-grotesk/400.css");
+@import url("@fontsource/schibsted-grotesk/500.css");
+@import url("@fontsource/schibsted-grotesk/600.css");
+@import url("@fontsource/schibsted-grotesk/700.css");
+@import url("@fontsource/schibsted-grotesk/800.css");
 
 @tailwind base;
 @tailwind components;
@@ -14,143 +14,179 @@
 */
 
 @layer base {
-  :root {
-    /* Rotection Brand Colors - Light Mode */
-    --background: 270 50% 98%; /* Lavender Mist */
-    --foreground: 260 40% 15%; /* Deep Indigo text */
+    :root {
+        /* Rotection Brand Colors - Light Mode */
+        --background: 270 50% 98%; /* Lavender Mist */
+        --foreground: 260 40% 15%; /* Deep Indigo text */
 
-    --card: 0 0% 100%;
-    --card-foreground: 260 40% 15%;
+        --card: 0 0% 100%;
+        --card-foreground: 260 40% 15%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 260 40% 15%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 260 40% 15%;
 
-    --primary: 271 76% 53%; /* Vivid Purple */
-    --primary-foreground: 0 0% 100%;
+        --primary: 271 76% 53%; /* Vivid Purple */
+        --primary-foreground: 0 0% 100%;
 
-    --secondary: 270 30% 94%; /* Light Lavender */
-    --secondary-foreground: 271 76% 53%;
+        --secondary: 270 30% 94%; /* Light Lavender */
+        --secondary-foreground: 271 76% 53%;
 
-    --muted: 270 20% 92%;
-    --muted-foreground: 260 15% 45%;
+        --muted: 270 20% 92%;
+        --muted-foreground: 260 15% 45%;
 
-    --accent: 271 50% 90%; /* Purple tinted accent */
-    --accent-foreground: 271 76% 40%;
+        --accent: 271 50% 90%; /* Purple tinted accent */
+        --accent-foreground: 271 76% 40%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 0 0% 100%;
 
-    --border: 270 20% 88%;
-    --input: 270 20% 88%;
-    --ring: 271 76% 53%;
+        --border: 270 20% 88%;
+        --input: 270 20% 88%;
+        --ring: 271 76% 53%;
 
-    --radius: 0.75rem;
+        --radius: 0.75rem;
 
-    /* Safety score colors */
-    --safety-high: 142 76% 36%;
-    --safety-high-bg: 142 76% 94%;
-    --safety-medium: 217 91% 60%;
-    --safety-medium-bg: 217 91% 94%;
-    --safety-low: 0 84% 60%;
-    --safety-low-bg: 0 84% 94%;
+        /* Safety score colors */
+        --safety-high: 142 76% 36%;
+        --safety-high-bg: 142 76% 94%;
+        --safety-medium: 217 91% 60%;
+        --safety-medium-bg: 217 91% 94%;
+        --safety-low: 0 84% 60%;
+        --safety-low-bg: 0 84% 94%;
 
-    /* Rating star color */
-    --star: 45 93% 47%;
+        /* Rating star color */
+        --star: 45 93% 47%;
 
-    /* Sidebar */
-    --sidebar-background: 270 50% 98%;
-    --sidebar-foreground: 260 40% 20%;
-    --sidebar-primary: 271 76% 53%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 270 30% 94%;
-    --sidebar-accent-foreground: 260 40% 20%;
-    --sidebar-border: 270 20% 88%;
-    --sidebar-ring: 271 76% 53%;
-  }
+        /* Sidebar */
+        --sidebar-background: 270 50% 98%;
+        --sidebar-foreground: 260 40% 20%;
+        --sidebar-primary: 271 76% 53%;
+        --sidebar-primary-foreground: 0 0% 100%;
+        --sidebar-accent: 270 30% 94%;
+        --sidebar-accent-foreground: 260 40% 20%;
+        --sidebar-border: 270 20% 88%;
+        --sidebar-ring: 271 76% 53%;
+    }
 
-  .dark {
-    /* Rotection Brand Colors - Dark Mode (Deep Indigo base) */
-    --background: 260 40% 8%; /* Deep Indigo */
-    --foreground: 270 50% 96%; /* Lavender Mist text */
+    .dark {
+        /* Rotection Brand Colors - Dark Mode (Deep Indigo base) */
+        --background: 260 40% 8%; /* Deep Indigo */
+        --foreground: 270 50% 96%; /* Lavender Mist text */
 
-    --card: 260 35% 12%;
-    --card-foreground: 270 50% 96%;
+        --card: 260 35% 12%;
+        --card-foreground: 270 50% 96%;
 
-    --popover: 260 35% 12%;
-    --popover-foreground: 270 50% 96%;
+        --popover: 260 35% 12%;
+        --popover-foreground: 270 50% 96%;
 
-    --primary: 271 76% 60%; /* Vivid Purple (slightly lighter for dark mode) */
-    --primary-foreground: 0 0% 100%;
+        --primary: 271 76% 60%; /* Vivid Purple (slightly lighter for dark mode) */
+        --primary-foreground: 0 0% 100%;
 
-    --secondary: 260 30% 18%;
-    --secondary-foreground: 271 76% 70%;
+        --secondary: 260 30% 18%;
+        --secondary-foreground: 271 76% 70%;
 
-    --muted: 260 25% 16%;
-    --muted-foreground: 270 15% 60%;
+        --muted: 260 25% 16%;
+        --muted-foreground: 270 15% 60%;
 
-    --accent: 271 40% 20%;
-    --accent-foreground: 271 76% 75%;
+        --accent: 271 40% 20%;
+        --accent-foreground: 271 76% 75%;
 
-    --destructive: 0 62% 50%;
-    --destructive-foreground: 0 0% 100%;
+        --destructive: 0 62% 50%;
+        --destructive-foreground: 0 0% 100%;
 
-    --border: 260 25% 20%;
-    --input: 260 25% 20%;
-    --ring: 271 76% 60%;
+        --border: 260 25% 20%;
+        --input: 260 25% 20%;
+        --ring: 271 76% 60%;
 
-    /* Safety score colors - dark mode */
-    --safety-high: 142 65% 45%;
-    --safety-high-bg: 142 30% 15%;
-    --safety-medium: 217 80% 55%;
-    --safety-medium-bg: 217 30% 15%;
-    --safety-low: 0 70% 55%;
-    --safety-low-bg: 0 30% 15%;
+        /* Safety score colors - dark mode */
+        --safety-high: 142 65% 45%;
+        --safety-high-bg: 142 30% 15%;
+        --safety-medium: 217 80% 55%;
+        --safety-medium-bg: 217 30% 15%;
+        --safety-low: 0 70% 55%;
+        --safety-low-bg: 0 30% 15%;
 
-    /* Sidebar */
-    --sidebar-background: 260 40% 8%;
-    --sidebar-foreground: 270 50% 90%;
-    --sidebar-primary: 271 76% 60%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 260 30% 15%;
-    --sidebar-accent-foreground: 270 50% 90%;
-    --sidebar-border: 260 25% 20%;
-    --sidebar-ring: 271 76% 60%;
-  }
+        /* Sidebar */
+        --sidebar-background: 260 40% 8%;
+        --sidebar-foreground: 270 50% 90%;
+        --sidebar-primary: 271 76% 60%;
+        --sidebar-primary-foreground: 0 0% 100%;
+        --sidebar-accent: 260 30% 15%;
+        --sidebar-accent-foreground: 270 50% 90%;
+        --sidebar-border: 260 25% 20%;
+        --sidebar-ring: 271 76% 60%;
+    }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
+    * {
+        @apply border-border;
+    }
 
-  html {
-    font-family: 'Schibsted Grotesk', sans-serif;
-  }
+    html {
+        font-family: "Schibsted Grotesk", sans-serif;
+    }
 
-  body {
-    @apply bg-background text-foreground antialiased;
-  }
+    body {
+        @apply bg-background text-foreground antialiased;
+    }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Schibsted Grotesk', sans-serif;
-    @apply font-extrabold tracking-tight;
-  }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: "Schibsted Grotesk", sans-serif;
+        @apply font-extrabold tracking-tight;
+    }
 }
 
 /* Custom scrollbar for dark mode */
 .dark ::-webkit-scrollbar {
-  width: 10px;
+    width: 10px;
 }
 
 .dark ::-webkit-scrollbar-track {
-  background: hsl(260 40% 8%);
+    background: hsl(260 40% 8%);
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: hsl(260 25% 25%);
-  border-radius: 5px;
+    background: hsl(260 25% 25%);
+    border-radius: 5px;
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: hsl(271 76% 50%);
+    background: hsl(271 76% 50%);
+}
+
+/* Custom animations */
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes float {
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.animate-fade-in {
+    animation: fade-in 0.6s ease-out forwards;
+    opacity: 0;
+}
+
+.animate-float {
+    animation: float 3s ease-in-out infinite;
 }
