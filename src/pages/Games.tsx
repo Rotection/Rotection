@@ -49,6 +49,19 @@ const Games = () => {
           "🔍 DEBUG: Has Anon Key:",
           !!import.meta.env.VITE_SUPABASE_ANON_KEY,
         );
+        console.log(
+          "🔍 DEBUG: Anon Key Length:",
+          import.meta.env.VITE_SUPABASE_ANON_KEY?.length || 0,
+        );
+        console.log(
+          "🔍 DEBUG: Anon Key First 20 chars:",
+          import.meta.env.VITE_SUPABASE_ANON_KEY?.substring(0, 20) ||
+            "undefined",
+        );
+        console.log(
+          "🔍 DEBUG: All Env Vars:",
+          Object.keys(import.meta.env).filter((key) => key.startsWith("VITE_")),
+        );
 
         // Load genres
         console.log("🔍 DEBUG: Loading genres...");
