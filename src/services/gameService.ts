@@ -186,6 +186,9 @@ export class GameService {
    */
   static async getGameById(id: string): Promise<Game | null> {
     try {
+      console.log("🎮 DEBUG: getGameById called with ID:", id);
+      console.log("🎮 DEBUG: Querying games_with_ratings view...");
+
       const { data, error } = await supabase
         .from("games_with_ratings")
         .select("*")
@@ -193,11 +196,18 @@ export class GameService {
         .eq("status", "approved")
         .single();
 
+      console.log("🎮 DEBUG: getGameById query result - Data:", data);
+      console.log("🎮 DEBUG: getGameById query result - Error:", error);
+
       if (error) {
-        console.error("Error fetching game:", error);
+        console.error("❌ DEBUG: Error fetching game by ID:", error);
         return null;
       }
 
+      console.log(
+        "✅ DEBUG: getGameById returning game:",
+        data?.title || "unknown",
+      );
       return data;
     } catch (error) {
       console.error("Error in getGameById:", error);

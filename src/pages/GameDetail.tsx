@@ -56,16 +56,24 @@ const GameDetail = () => {
     const fetchGameData = async () => {
       if (!id) return;
 
+      console.log("🎮 DEBUG: GameDetail - Fetching game with ID:", id);
       setLoading(true);
       setError(null);
 
       try {
         // Fetch game data
+        console.log("🎮 DEBUG: GameDetail - Calling getGameById...");
         const game = await GameService.getGameById(id);
+        console.log("🎮 DEBUG: GameDetail - Game result:", game);
         if (!game) {
+          console.log("❌ DEBUG: GameDetail - No game found for ID:", id);
           setError("Game not found");
           return;
         }
+        console.log(
+          "✅ DEBUG: GameDetail - Game loaded successfully:",
+          game.title,
+        );
         setGameData(game);
 
         // Fetch reviews
