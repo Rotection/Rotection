@@ -1,110 +1,128 @@
-import { useState } from "react";
-import { Search, Filter, Shield } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, Filter, Shield, Loader2, AlertCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { GameCard } from "@/components/GameCard";
+import { GameService, type Game } from "@/services/gameService";
 
-// Sample data - in a real app, this would come from the database
-const allGames = [
-  {
-    id: "101411193179895",
-    title: "[ METALLIX ] Speedsters Sandbox",
-    developer: "Speedsters Sandbox",
-    imageUrl: "https://tr.rbxcdn.com/180DAY-bf6e00c4f61b35b36ea92d828e4c3232/768/432/Image/Webp/noFilter",
-    safetyScore: 90,
-    rating: 4.5,
-    ratingCount: 12,
-    ageRating: "5+",
-    genre: "Sandbox",
-    verified: true,
-  },
-  {
-    id: "2",
-    title: "Pilgrammed",
-    developer: "Phexonia Studios",
-    imageUrl: "https://tr.rbxcdn.com/180DAY-1985fb1fa6534213463d7814f3958298/768/432/Image/Webp/noFilter",
-    safetyScore: 80,
-    rating: 4.0,
-    ratingCount: 1,
-    ageRating: "9+",
-    genre: "Party & Casual",
-    verified: false,
-  },
-  {
-    id: "3",
-    title: "Prophecy Battle Arena",
-    developer: "@GoldenObscurity",
-    imageUrl: "https://tr.rbxcdn.com/180DAY-f686b29c5acc0a09de9c8edb5eaddfd6/768/432/Image/Webp/noFilter",
-    safetyScore: 90,
-    rating: 4.5,
-    ratingCount: 1,
-    ageRating: "9+",
-    genre: "Action RPG",
-    verified: true,
-  },
-  {
-    id: "4",
-    title: "Adopt Me!",
-    developer: "DreamCraft",
-    imageUrl: "https://tr.rbxcdn.com/180DAY-e5f0eba9e9f8ac0c1af1d7f7c25d2ec7/768/432/Image/Webp/noFilter",
-    safetyScore: 95,
-    rating: 4.8,
-    ratingCount: 156,
-    ageRating: "5+",
-    genre: "Roleplay",
-    verified: true,
-  },
-  {
-    id: "5",
-    title: "Murder Mystery 2",
-    developer: "Nikilis",
-    imageUrl: "https://tr.rbxcdn.com/180DAY-62fb6bef5e15c8bf7d3c0f8e25c2a9b8/768/432/Image/Webp/noFilter",
-    safetyScore: 75,
-    rating: 4.2,
-    ratingCount: 89,
-    ageRating: "9+",
-    genre: "Horror",
-    verified: true,
-  },
-  {
-    id: "6",
-    title: "Tower of Hell",
-    developer: "YXCeptional Studios",
-    imageUrl: "https://tr.rbxcdn.com/180DAY-c3b5f8e9d2a1b7c4e6f8a0b3c5d7e9f1/768/432/Image/Webp/noFilter",
-    safetyScore: 88,
-    rating: 4.4,
-    ratingCount: 234,
-    ageRating: "7+",
-    genre: "Obby",
-    verified: true,
-  },
+const sortOptions = [
+  { value: "popular", label: "Most Popular" },
+  { value: "safety", label: "Highest Safety" },
+  { value: "newest", label: "Newest" },
+  { value: "rated", label: "Top Rated" },
 ];
 
-const genres = ["All Genres", "Action RPG", "Adventure", "Horror", "Obby", "Party & Casual", "Roleplay", "Sandbox"];
-const sortOptions = ["Most Popular", "Highest Safety", "Newest", "Top Rated"];
-
 const Games = () => {
+  const [games, setGames] = useState<Game[]>([]);
+  const [genres, setGenres] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Filter states
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGenre, setSelectedGenre] = useState("All Genres");
-  const [sortBy, setSortBy] = useState("Most Popular");
+  const [sortBy, setSortBy] = useState("popular");
   const [showVerifiedOnly, setShowVerifiedOnly] = useState(false);
 
-  const filteredGames = allGames.filter((game) => {
-    const matchesSearch = game.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         game.developer.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesGenre = selectedGenre === "All Genres" || game.genre === selectedGenre;
-    const matchesVerified = !showVerifiedOnly || game.verified;
-    
-    return matchesSearch && matchesGenre && matchesVerified;
-  });
+  // Load initial data
+  useEffect(() => {
+    const loadInitialData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Load genres
+        const genreList = await GameService.getGenres();
+        setGenres(["All Genres", ...genreList]);
+
+        // Load all games
+        const allGames = await GameService.getAllGames({
+          search: searchQuery,
+          genre: selectedGenre,
+          verifiedOnly: showVerifiedOnly,
+          sortBy: sortBy as any,
+        });
+
+        setGames(allGames);
+      } catch (err) {
+        console.error("Failed to load games:", err);
+        setError("Failed to load games. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadInitialData();
+  }, []);
+
+  // Filter games when filters change
+  useEffect(() => {
+    const loadFilteredGames = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const filteredGames = await GameService.getAllGames({
+          search: searchQuery,
+          genre: selectedGenre,
+          verifiedOnly: showVerifiedOnly,
+          sortBy: sortBy as any,
+        });
+
+        setGames(filteredGames);
+      } catch (err) {
+        console.error("Failed to filter games:", err);
+        setError("Failed to load games. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Debounce search
+    const timeoutId = setTimeout(
+      () => {
+        loadFilteredGames();
+      },
+      searchQuery ? 300 : 0,
+    );
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery, selectedGenre, sortBy, showVerifiedOnly]);
+
+  const handleRetry = () => {
+    window.location.reload();
+  };
+
+  if (error && games.length === 0) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center space-y-4 max-w-md">
+            <AlertCircle className="h-12 w-12 text-red-500 mx-auto" />
+            <h2 className="text-2xl font-bold">Failed to Load Games</h2>
+            <p className="text-muted-foreground">{error}</p>
+            <Button onClick={handleRetry}>Try Again</Button>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       <main className="py-12 px-4">
         <div className="container max-w-7xl mx-auto">
           {/* Header */}
@@ -113,12 +131,13 @@ const Games = () => {
               Browse Safe Games
             </h1>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Find verified Roblox games that are safe, fair, and age-appropriate for everyone.
+              Find verified Roblox games that are safe, fair, and
+              age-appropriate for everyone.
             </p>
           </div>
 
           {/* Filters */}
-          <div 
+          <div
             className="bg-card rounded-2xl border border-border p-6 mb-8 animate-fade-in"
             style={{ animationDelay: "0.1s" }}
           >
@@ -142,7 +161,9 @@ const Games = () => {
                 </SelectTrigger>
                 <SelectContent>
                   {genres.map((genre) => (
-                    <SelectItem key={genre} value={genre}>{genre}</SelectItem>
+                    <SelectItem key={genre} value={genre}>
+                      {genre}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -154,7 +175,9 @@ const Games = () => {
                 </SelectTrigger>
                 <SelectContent>
                   {sortOptions.map((option) => (
-                    <SelectItem key={option} value={option}>{option}</SelectItem>
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -171,32 +194,139 @@ const Games = () => {
             </div>
           </div>
 
+          {/* Loading State */}
+          {loading && games.length === 0 && (
+            <div className="flex items-center justify-center py-16">
+              <div className="text-center space-y-4">
+                <Loader2 className="h-8 w-8 animate-spin mx-auto" />
+                <p className="text-muted-foreground">Loading games...</p>
+              </div>
+            </div>
+          )}
+
           {/* Results Count */}
-          <p className="text-muted-foreground mb-6 animate-fade-in" style={{ animationDelay: "0.15s" }}>
-            Showing {filteredGames.length} {filteredGames.length === 1 ? "game" : "games"}
-          </p>
+          {!loading && (
+            <div
+              className="flex items-center justify-between mb-6 animate-fade-in"
+              style={{ animationDelay: "0.15s" }}
+            >
+              <p className="text-muted-foreground">
+                Showing {games.length} {games.length === 1 ? "game" : "games"}
+                {searchQuery && ` for "${searchQuery}"`}
+                {selectedGenre !== "All Genres" && ` in ${selectedGenre}`}
+                {showVerifiedOnly && " (verified only)"}
+              </p>
+
+              {loading && games.length > 0 && (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span className="text-sm">Updating...</span>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Games Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredGames.map((game, index) => (
-              <div
-                key={game.id}
-                className="animate-fade-in"
-                style={{ animationDelay: `${(index + 2) * 0.05}s` }}
-              >
-                <GameCard {...game} />
-              </div>
-            ))}
-          </div>
+          {!loading && games.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {games.map((game, index) => (
+                <div
+                  key={game.id}
+                  className="animate-fade-in"
+                  style={{ animationDelay: `${(index + 2) * 0.05}s` }}
+                >
+                  <GameCard {...game} />
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* No Results */}
-          {filteredGames.length === 0 && (
+          {!loading && games.length === 0 && (
             <div className="text-center py-16 animate-fade-in">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
                 <Search className="w-8 h-8 text-muted-foreground" />
               </div>
-              <h3 className="text-xl font-bold text-foreground mb-2">No games found</h3>
-              <p className="text-muted-foreground">Try adjusting your search or filters</p>
+              <h3 className="text-xl font-bold text-foreground mb-2">
+                No games found
+              </h3>
+              <p className="text-muted-foreground mb-4">
+                {searchQuery ||
+                selectedGenre !== "All Genres" ||
+                showVerifiedOnly
+                  ? "Try adjusting your search or filters"
+                  : "No games available at the moment"}
+              </p>
+              {(searchQuery ||
+                selectedGenre !== "All Genres" ||
+                showVerifiedOnly) && (
+                <div className="flex items-center justify-center gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setSearchQuery("");
+                      setSelectedGenre("All Genres");
+                      setShowVerifiedOnly(false);
+                    }}
+                  >
+                    Clear Filters
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Error State (when games exist but filter fails) */}
+          {error && games.length > 0 && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+              <div className="flex items-center gap-2 text-red-700">
+                <AlertCircle className="h-4 w-4" />
+                <p className="text-sm font-medium">
+                  There was an issue updating the results. Showing previous
+                  results.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Game Statistics (optional footer section) */}
+          {!loading && games.length > 0 && (
+            <div className="mt-16 pt-8 border-t border-border">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                <div className="space-y-2">
+                  <p className="text-2xl font-bold text-primary">
+                    {games.length}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Games{" "}
+                    {searchQuery ||
+                    selectedGenre !== "All Genres" ||
+                    showVerifiedOnly
+                      ? "matching filters"
+                      : "available"}
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-2xl font-bold text-primary">
+                    {games.filter((g) => g.verified).length}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Verified Safe Games
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-2xl font-bold text-primary">
+                    {Math.round(
+                      games.reduce((acc, game) => acc + game.safetyScore, 0) /
+                        games.length,
+                    )}
+                    %
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Average Safety Score
+                  </p>
+                </div>
+              </div>
             </div>
           )}
         </div>
