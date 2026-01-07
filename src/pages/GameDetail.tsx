@@ -418,7 +418,7 @@ const GameDetail = () => {
                       <div className="flex items-center gap-2">
                         <StarRating value={Math.round(value)} readonly />
                         <span className="text-foreground font-medium min-w-[2rem]">
-                          {value.toFixed(1)}
+                          {value ? value.toFixed(1) : "0.0"}
                         </span>
                       </div>
                     </div>

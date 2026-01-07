@@ -7,7 +7,7 @@ interface GameCardProps {
   developer: string;
   imageUrl: string;
   safetyScore: number;
-  rating: number;
+  rating?: number;
   ratingCount: number;
   ageRating: string;
   genre: string;
@@ -42,7 +42,7 @@ export function GameCard({
             alt={title}
             className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
           />
-          
+
           {/* Verified Badge */}
           {verified && (
             <div className="absolute top-3 right-3 bg-primary text-primary-foreground px-3 py-1 rounded-full flex items-center gap-1.5 text-sm font-medium">
@@ -52,7 +52,9 @@ export function GameCard({
           )}
 
           {/* Safety Score */}
-          <div className={`absolute top-3 left-3 px-3 py-1 rounded-full text-sm font-medium ${getSafetyColor(safetyScore)}`}>
+          <div
+            className={`absolute top-3 left-3 px-3 py-1 rounded-full text-sm font-medium ${getSafetyColor(safetyScore)}`}
+          >
             Safety: {safetyScore}%
           </div>
         </div>
@@ -78,11 +80,13 @@ export function GameCard({
           <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
             <div className="flex items-center gap-1">
               <Star className="w-4 h-4 text-star fill-star" />
-              <span>{rating.toFixed(1)}</span>
+              <span>{rating ? rating.toFixed(1) : "0.0"}</span>
             </div>
             <div className="flex items-center gap-1">
               <Users className="w-4 h-4" />
-              <span>{ratingCount} {ratingCount === 1 ? "rating" : "ratings"}</span>
+              <span>
+                {ratingCount} {ratingCount === 1 ? "rating" : "ratings"}
+              </span>
             </div>
           </div>
 
