@@ -100,10 +100,17 @@ export class GameService {
     offset?: number;
   }): Promise<Game[]> {
     try {
+      console.log(
+        "🎮 DEBUG: GameService.getAllGames called with filters:",
+        filters,
+      );
+
       let query = supabase
         .from("games_with_ratings")
         .select("*")
         .eq("status", "approved");
+
+      console.log("🎮 DEBUG: Base query created for games_with_ratings");
 
       // Apply search filter
       if (filters?.search) {
@@ -155,16 +162,21 @@ export class GameService {
         );
       }
 
+      console.log("🎮 DEBUG: Executing query...");
       const { data, error } = await query;
 
+      console.log("🎮 DEBUG: Query result - Data count:", data?.length || 0);
+      console.log("🎮 DEBUG: Query result - Error:", error);
+
       if (error) {
-        console.error("Error fetching games:", error);
+        console.error("❌ DEBUG: Error fetching games:", error);
         return [];
       }
 
+      console.log("🎮 DEBUG: Returning games:", data?.length || 0);
       return data || [];
     } catch (error) {
-      console.error("Error in getAllGames:", error);
+      console.error("❌ DEBUG: Exception in getAllGames:", error);
       return [];
     }
   }
@@ -590,7 +602,7 @@ export class GameService {
         .limit(limit);
 
       if (error) {
-        console.error("Error fetching games by genre:", error);
+        console.error("❌ DEBUG: Error fetching genres:", error);
         return [];
       }
 
@@ -606,11 +618,19 @@ export class GameService {
    */
   static async getGenres(): Promise<string[]> {
     try {
+      console.log("🎮 DEBUG: GameService.getGenres called");
+
       const { data, error } = await supabase
         .from("games")
         .select("genre")
         .eq("status", "approved")
         .not("genre", "is", null);
+
+      console.log(
+        "🎮 DEBUG: getGenres query result - Data:",
+        data?.length || 0,
+      );
+      console.log("🎮 DEBUG: getGenres query result - Error:", error);
 
       if (error) {
         console.error("Error fetching genres:", error);

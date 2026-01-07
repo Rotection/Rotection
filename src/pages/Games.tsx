@@ -40,11 +40,29 @@ const Games = () => {
         setLoading(true);
         setError(null);
 
+        console.log("🔍 DEBUG: Starting to load games...");
+        console.log(
+          "🔍 DEBUG: Supabase URL:",
+          import.meta.env.VITE_SUPABASE_URL,
+        );
+        console.log(
+          "🔍 DEBUG: Has Anon Key:",
+          !!import.meta.env.VITE_SUPABASE_ANON_KEY,
+        );
+
         // Load genres
+        console.log("🔍 DEBUG: Loading genres...");
         const genreList = await GameService.getGenres();
+        console.log("🔍 DEBUG: Genres loaded:", genreList);
         setGenres(["All Genres", ...genreList]);
 
         // Load all games
+        console.log("🔍 DEBUG: Loading games with filters:", {
+          search: searchQuery,
+          genre: selectedGenre,
+          verifiedOnly: showVerifiedOnly,
+          sortBy: sortBy,
+        });
         const allGames = await GameService.getAllGames({
           search: searchQuery,
           genre: selectedGenre,
@@ -52,9 +70,11 @@ const Games = () => {
           sortBy: sortBy as any,
         });
 
+        console.log("🔍 DEBUG: Games loaded:", allGames.length, "games");
+        console.log("🔍 DEBUG: First game:", allGames[0]);
         setGames(allGames);
       } catch (err) {
-        console.error("Failed to load games:", err);
+        console.error("❌ DEBUG: Failed to load games:", err);
         setError("Failed to load games. Please try again.");
       } finally {
         setLoading(false);
@@ -71,6 +91,13 @@ const Games = () => {
         setLoading(true);
         setError(null);
 
+        console.log("🔍 DEBUG: Filtering games with:", {
+          search: searchQuery,
+          genre: selectedGenre,
+          verifiedOnly: showVerifiedOnly,
+          sortBy: sortBy,
+        });
+
         const filteredGames = await GameService.getAllGames({
           search: searchQuery,
           genre: selectedGenre,
@@ -78,9 +105,14 @@ const Games = () => {
           sortBy: sortBy as any,
         });
 
+        console.log(
+          "🔍 DEBUG: Filtered games result:",
+          filteredGames.length,
+          "games",
+        );
         setGames(filteredGames);
       } catch (err) {
-        console.error("Failed to filter games:", err);
+        console.error("❌ DEBUG: Failed to filter games:", err);
         setError("Failed to load games. Please try again.");
       } finally {
         setLoading(false);
