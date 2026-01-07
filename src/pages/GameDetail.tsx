@@ -30,178 +30,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-// Sample games database - in a real app, this would come from your database
-const gamesDatabase = {
-  "101411193179895": {
-    id: "101411193179895",
-    title: "[ METALLIX ] Speedsters Sandbox",
-    developer: "Speedsters Sandbox",
-    imageUrl:
-      "https://tr.rbxcdn.com/180DAY-bf6e00c4f61b35b36ea92d828e4c3232/768/432/Image/Webp/noFilter",
-    safetyScore: 90,
-    rating: 4.5,
-    ratingCount: 12,
-    ageRating: "5+",
-    genre: "Sandbox",
-    verified: true,
-    description:
-      "An amazing sandbox game where you can become a speedster and explore a vast world with other players. Experience lightning-fast gameplay with friends in this safe, moderated environment.",
-    robloxLink: "https://www.roblox.com/games/101411193179895",
-    lastUpdated: "Dec 2024",
-    totalPlays: "2.5M+",
-    ratings: {
-      honesty: 4.5,
-      safety: 4.8,
-      fairness: 4.2,
-      ageAppropriate: 4.7,
-    },
-    reviews: [
-      {
-        id: "1",
-        author: "Player123",
-        rating: 5,
-        content: "Great game! Very safe and fun for kids. Highly recommend!",
-        date: "2024-12-15",
-        helpful: 24,
-        unhelpful: 2,
-      },
-      {
-        id: "2",
-        author: "GamerMom",
-        rating: 4,
-        content:
-          "My kids love this game. No concerns about safety or inappropriate content.",
-        date: "2024-12-10",
-        helpful: 18,
-        unhelpful: 1,
-      },
-    ],
-  },
-  "2": {
-    id: "2",
-    title: "Pilgrammed",
-    developer: "Phexonia Studios",
-    imageUrl:
-      "https://tr.rbxcdn.com/180DAY-1985fb1fa6534213463d7814f3958298/768/432/Image/Webp/noFilter",
-    safetyScore: 80,
-    rating: 4.0,
-    ratingCount: 1,
-    ageRating: "9+",
-    genre: "Party & Casual",
-    verified: false,
-    description:
-      "A unique party game experience where players can engage in various mini-games and social activities. Perfect for group play with built-in safety features.",
-    robloxLink: "https://www.roblox.com/games/2",
-    lastUpdated: "Nov 2024",
-    totalPlays: "850K+",
-    ratings: {
-      honesty: 4.0,
-      safety: 4.2,
-      fairness: 3.8,
-      ageAppropriate: 4.1,
-    },
-    reviews: [
-      {
-        id: "3",
-        author: "CasualGamer",
-        rating: 4,
-        content:
-          "Fun party game with friends. Some minor issues but overall good.",
-        date: "2024-11-20",
-        helpful: 12,
-        unhelpful: 1,
-      },
-    ],
-  },
-  "3": {
-    id: "3",
-    title: "Prophecy Battle Arena",
-    developer: "@GoldenObscurity",
-    imageUrl:
-      "https://tr.rbxcdn.com/180DAY-f686b29c5acc0a09de9c8edb5eaddfd6/768/432/Image/Webp/noFilter",
-    safetyScore: 90,
-    rating: 4.5,
-    ratingCount: 1,
-    ageRating: "9+",
-    genre: "Action RPG",
-    verified: true,
-    description:
-      "Enter an epic battle arena where strategy meets action. Fight mythical creatures and other players in this carefully moderated RPG environment.",
-    robloxLink: "https://www.roblox.com/games/3",
-    lastUpdated: "Dec 2024",
-    totalPlays: "1.2M+",
-    ratings: {
-      honesty: 4.6,
-      safety: 4.7,
-      fairness: 4.3,
-      ageAppropriate: 4.4,
-    },
-    reviews: [
-      {
-        id: "4",
-        author: "RPGFan",
-        rating: 5,
-        content:
-          "Amazing RPG with great community moderation. Very fair gameplay!",
-        date: "2024-12-01",
-        helpful: 8,
-        unhelpful: 0,
-      },
-    ],
-  },
-  "4": {
-    id: "4",
-    title: "Adopt Me!",
-    developer: "DreamCraft",
-    imageUrl:
-      "https://tr.rbxcdn.com/180DAY-e5f0eba9e9f8ac0c1af1d7f7c25d2ec7/768/432/Image/Webp/noFilter",
-    safetyScore: 95,
-    rating: 4.8,
-    ratingCount: 156,
-    ageRating: "5+",
-    genre: "Roleplay",
-    verified: true,
-    description:
-      "The most popular pet adoption game on Roblox! Adopt pets, decorate your house, and make friends in this incredibly safe and moderated environment.",
-    robloxLink: "https://www.roblox.com/games/4",
-    lastUpdated: "Jan 2025",
-    totalPlays: "50M+",
-    ratings: {
-      honesty: 4.9,
-      safety: 4.8,
-      fairness: 4.7,
-      ageAppropriate: 4.9,
-    },
-    reviews: [
-      {
-        id: "5",
-        author: "ParentUser",
-        rating: 5,
-        content:
-          "Perfect game for young children. Excellent safety features and moderation.",
-        date: "2024-12-20",
-        helpful: 45,
-        unhelpful: 1,
-      },
-      {
-        id: "6",
-        author: "KidGamer",
-        rating: 5,
-        content:
-          "I love adopting pets and decorating my house! Very fun and safe!",
-        date: "2024-12-18",
-        helpful: 32,
-        unhelpful: 0,
-      },
-    ],
-  },
-};
+// Dynamic game data will be loaded from Supabase database
 
 const GameDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuthContext();
   const [gameData, setGameData] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [userRating, setUserRating] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showRatingDialog, setShowRatingDialog] = useState(false);
@@ -217,23 +54,46 @@ const GameDetail = () => {
 
   useEffect(() => {
     const fetchGameData = async () => {
+      if (!id) return;
+
       setLoading(true);
       setError(null);
 
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      try {
+        // Fetch game data
+        const game = await GameService.getGameById(id);
+        if (!game) {
+          setError("Game not found");
+          return;
+        }
+        setGameData(game);
 
-      if (id && gamesDatabase[id]) {
-        setGameData(gamesDatabase[id]);
-      } else {
-        setError("Game not found");
+        // Fetch reviews
+        const gameReviews = await GameService.getGameReviews(id);
+        setReviews(gameReviews);
+
+        // Fetch user's existing rating if logged in
+        if (user) {
+          const rating = await GameService.getUserRating(id, user.id);
+          if (rating) {
+            setUserRating({
+              honesty: rating.honesty,
+              safety: rating.safety,
+              fairness: rating.fairness,
+              ageAppropriate: rating.age_appropriate,
+            });
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching game data:", err);
+        setError("Failed to load game data");
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     };
 
     fetchGameData();
-  }, [id]);
+  }, [id, user]);
 
   const getSafetyColor = (score) => {
     if (score >= 80) return "text-green-700 bg-green-100 border-green-200";
@@ -241,7 +101,7 @@ const GameDetail = () => {
     return "text-red-700 bg-red-100 border-red-200";
   };
 
-  const handleSubmitRating = () => {
+  const handleSubmitRating = async () => {
     if (!user) {
       toast({
         title: "Sign in required",
@@ -260,18 +120,68 @@ const GameDetail = () => {
       return;
     }
 
-    // In a real app, submit to database
-    toast({
-      title: "Rating Submitted!",
-      description: "Thank you for helping the community!",
-    });
+    if (!gameData) return;
 
-    setShowRatingDialog(false);
-    setUserRatings({ honesty: 0, safety: 0, fairness: 0, ageAppropriate: 0 });
-    setReviewText("");
+    setIsLoading(true);
+    try {
+      const result = await GameService.submitRating(
+        gameData.id,
+        user.id,
+        {
+          honesty: userRatings.honesty,
+          safety: userRatings.safety,
+          fairness: userRatings.fairness,
+          age_appropriate: userRatings.ageAppropriate,
+        },
+        reviewText.trim() || undefined,
+      );
+
+      if (result.success) {
+        toast({
+          title: "Rating Submitted!",
+          description: result.message,
+        });
+
+        // Refresh game data to show updated ratings
+        const updatedGame = await GameService.getGameById(gameData.id);
+        if (updatedGame) {
+          setGameData(updatedGame);
+        }
+
+        // Refresh reviews if a review was submitted
+        if (reviewText.trim()) {
+          const gameReviews = await GameService.getGameReviews(gameData.id);
+          setReviews(gameReviews);
+        }
+
+        setShowRatingDialog(false);
+        setUserRatings({
+          honesty: 0,
+          safety: 0,
+          fairness: 0,
+          ageAppropriate: 0,
+        });
+        setReviewText("");
+      } else {
+        toast({
+          title: "Error",
+          description: result.message,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error submitting rating:", error);
+      toast({
+        title: "Error",
+        description: "Failed to submit rating. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleSubmitReport = () => {
+  const handleSubmitReport = async () => {
     if (!user) {
       toast({
         title: "Sign in required",
@@ -290,14 +200,43 @@ const GameDetail = () => {
       return;
     }
 
-    // In a real app, submit to database
-    toast({
-      title: "Report Submitted",
-      description: "Our moderators will review your report shortly.",
-    });
+    if (!gameData) return;
 
-    setShowReportDialog(false);
-    setReportText("");
+    setIsLoading(true);
+    try {
+      const result = await GameService.submitReport(
+        gameData.id,
+        user.id,
+        reportText.trim(),
+        user.email,
+        profile?.username || "Anonymous",
+        gameData.title,
+      );
+
+      if (result.success) {
+        toast({
+          title: "Report Submitted",
+          description: result.message,
+        });
+        setShowReportDialog(false);
+        setReportText("");
+      } else {
+        toast({
+          title: "Error",
+          description: result.message,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error submitting report:", error);
+      toast({
+        title: "Error",
+        description: "Failed to submit report. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const StarRating = ({ value, onChange, readonly = false }) => (
@@ -401,25 +340,29 @@ const GameDetail = () => {
                 </p>
                 <div className="flex flex-wrap items-center gap-4">
                   <Badge
-                    className={`px-4 py-2 border ${getSafetyColor(gameData.safetyScore)}`}
+                    className={`px-4 py-2 border ${getSafetyColor(gameData.safety_score || 50)}`}
                     variant="outline"
                   >
-                    Safety Score: {gameData.safetyScore}%
+                    Safety Score: {gameData.safety_score || 50}%
                   </Badge>
                   <div className="flex items-center gap-1 text-muted-foreground">
                     <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
                     <span className="font-medium text-foreground">
-                      {gameData.rating.toFixed(1)}
+                      {gameData.avg_overall_rating
+                        ? gameData.avg_overall_rating.toFixed(1)
+                        : "0.0"}
                     </span>
-                    <span>({gameData.ratingCount} ratings)</span>
+                    <span>({gameData.rating_count || 0} ratings)</span>
                   </div>
-                  <Badge variant="secondary">{gameData.ageRating}</Badge>
-                  <Badge
-                    variant="outline"
-                    className="bg-primary/10 text-primary border-primary/20"
-                  >
-                    {gameData.genre}
-                  </Badge>
+                  <Badge variant="secondary">{gameData.age_rating}</Badge>
+                  {gameData.genre && (
+                    <Badge
+                      variant="outline"
+                      className="bg-primary/10 text-primary border-primary/20"
+                    >
+                      {gameData.genre}
+                    </Badge>
+                  )}
                 </div>
               </div>
 
@@ -445,14 +388,33 @@ const GameDetail = () => {
                   Safety Ratings
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {Object.entries(gameData.ratings).map(([key, value]) => (
+                  {[
+                    {
+                      key: "honesty",
+                      label: "Honesty",
+                      value: gameData.avg_honesty || 0,
+                    },
+                    {
+                      key: "safety",
+                      label: "Safety",
+                      value: gameData.avg_safety || 0,
+                    },
+                    {
+                      key: "fairness",
+                      label: "Fairness",
+                      value: gameData.avg_fairness || 0,
+                    },
+                    {
+                      key: "age_appropriate",
+                      label: "Age Appropriate",
+                      value: gameData.avg_age_appropriate || 0,
+                    },
+                  ].map(({ key, label, value }) => (
                     <div
                       key={key}
                       className="flex items-center justify-between"
                     >
-                      <span className="text-muted-foreground capitalize">
-                        {key.replace(/([A-Z])/g, " $1").trim()}
-                      </span>
+                      <span className="text-muted-foreground">{label}</span>
                       <div className="flex items-center gap-2">
                         <StarRating value={Math.round(value)} readonly />
                         <span className="text-foreground font-medium min-w-[2rem]">
@@ -474,13 +436,13 @@ const GameDetail = () => {
                     Player Reviews
                   </h2>
                   <span className="text-muted-foreground">
-                    {gameData.reviews.length} reviews
+                    {reviews.length} reviews
                   </span>
                 </div>
 
-                {gameData.reviews.length > 0 ? (
+                {reviews.length > 0 ? (
                   <div className="space-y-6">
-                    {gameData.reviews.map((review) => (
+                    {reviews.map((review) => (
                       <div
                         key={review.id}
                         className="border-b border-border pb-6 last:border-0 last:pb-0"
@@ -488,12 +450,16 @@ const GameDetail = () => {
                         <div className="flex items-start justify-between mb-3">
                           <div>
                             <p className="font-medium text-foreground">
-                              {review.author}
+                              {review.author_username || "Anonymous"}
                             </p>
                             <div className="flex items-center gap-2 mt-1">
-                              <StarRating value={review.rating} readonly />
+                              <StarRating value={review.rating || 0} readonly />
                               <span className="text-sm text-muted-foreground">
-                                {review.date}
+                                {review.created_at
+                                  ? new Date(
+                                      review.created_at,
+                                    ).toLocaleDateString()
+                                  : ""}
                               </span>
                             </div>
                           </div>
@@ -502,13 +468,31 @@ const GameDetail = () => {
                           {review.content}
                         </p>
                         <div className="flex items-center gap-4">
-                          <button className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                          <button
+                            className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                            onClick={() =>
+                              user &&
+                              GameService.voteOnReview(review.id, user.id, true)
+                            }
+                            disabled={!user}
+                          >
                             <ThumbsUp className="w-4 h-4" />
-                            Helpful ({review.helpful})
+                            Helpful ({review.helpful_count || 0})
                           </button>
-                          <button className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                          <button
+                            className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                            onClick={() =>
+                              user &&
+                              GameService.voteOnReview(
+                                review.id,
+                                user.id,
+                                false,
+                              )
+                            }
+                            disabled={!user}
+                          >
                             <ThumbsDown className="w-4 h-4" />(
-                            {review.unhelpful})
+                            {review.unhelpful_count || 0})
                           </button>
                         </div>
                       </div>
@@ -534,7 +518,7 @@ const GameDetail = () => {
               >
                 <Button className="w-full rounded-full gap-2" asChild>
                   <a
-                    href={gameData.robloxLink}
+                    href={gameData.roblox_url}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -662,7 +646,7 @@ const GameDetail = () => {
                         Total Ratings
                       </p>
                       <p className="font-bold text-foreground">
-                        {gameData.ratingCount}
+                        {gameData.rating_count || 0}
                       </p>
                     </div>
                   </div>
@@ -673,7 +657,7 @@ const GameDetail = () => {
                     <div>
                       <p className="text-sm text-muted-foreground">Reviews</p>
                       <p className="font-bold text-foreground">
-                        {gameData.reviews.length}
+                        {reviews.length}
                       </p>
                     </div>
                   </div>
@@ -686,7 +670,7 @@ const GameDetail = () => {
                         Total Plays
                       </p>
                       <p className="font-bold text-foreground">
-                        {gameData.totalPlays}
+                        {GameService.formatVisitCount(gameData.total_plays)}
                       </p>
                     </div>
                   </div>
@@ -699,7 +683,9 @@ const GameDetail = () => {
                         Last Updated
                       </p>
                       <p className="font-bold text-foreground">
-                        {gameData.lastUpdated}
+                        {gameData.updated_at
+                          ? new Date(gameData.updated_at).toLocaleDateString()
+                          : "Unknown"}
                       </p>
                     </div>
                   </div>
