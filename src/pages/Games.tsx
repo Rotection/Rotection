@@ -67,7 +67,13 @@ const Games = () => {
         console.log("🔍 DEBUG: Loading genres...");
         const genreList = await GameService.getGenres();
         console.log("🔍 DEBUG: Genres loaded:", genreList);
-        setGenres(["All Genres", ...genreList]);
+
+        // Only set genres if we got valid data, avoid duplicating "All Genres"
+        if (genreList && genreList.length > 0) {
+          setGenres(["All Genres", ...genreList]);
+        } else {
+          setGenres(["All Genres"]);
+        }
 
         // Load all games
         console.log("🔍 DEBUG: Loading games with filters:", {
