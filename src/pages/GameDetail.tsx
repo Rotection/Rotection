@@ -64,9 +64,20 @@ const GameDetail = () => {
       try {
         // Fetch game data
         console.log("🎮 DEBUG: GameDetail - Calling getGameById...");
-        const game = await GameService.getGameById(id);
+        let game = await GameService.getGameById(id);
         console.log("🎮 DEBUG: GameDetail - Game result:", game);
+
+        // Fallback: if not found by app `id`, try roblox_id and redirect to canonical id
         if (!game) {
+          console.log("🎮 DEBUG: GameDetail - Not found by id, trying roblox_id lookup for:", id);
+          const byRoblox = await GameService.getGameByRobloxId(id);
+          console.log("🎮 DEBUG: GameDetail - getGameByRobloxId result:", byRoblox);
+          if (byRoblox) {
+            // Redirect to canonical game id URL
+            navigate(`/game/${byRoblox.id}`);
+            return;
+          }
+
           console.log("❌ DEBUG: GameDetail - No game found for ID:", id);
           setError("Game not found");
           return;
