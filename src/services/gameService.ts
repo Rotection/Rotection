@@ -187,8 +187,26 @@ export class GameService {
   static async getGameById(id: string): Promise<Game | null> {
     try {
       console.log("🎮 DEBUG: getGameById called with ID:", id);
-      console.log("🎮 DEBUG: Querying games_with_ratings view...");
 
+      // Prefer reading directly from `games` table so manual edits are respected
+      console.log("🎮 DEBUG: Querying `games` table for id", id);
+      const { data: gameData, error: gameError } = await supabase
+        .from("games")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (gameError) {
+        console.warn("🎮 WARN: Error fetching from games table:", gameError);
+      }
+
+      if (gameData) {
+        console.log("✅ DEBUG: getGameById returning game from `games`:", gameData?.title || "unknown");
+        return gameData as any;
+      }
+
+      // Fallback: try view (may be filtered by status)
+      console.log("🎮 DEBUG: Fallback - querying games_with_ratings view for id", id);
       const { data, error } = await supabase
         .from("games_with_ratings")
         .select("*")
@@ -196,18 +214,12 @@ export class GameService {
         .eq("status", "approved")
         .single();
 
-      console.log("🎮 DEBUG: getGameById query result - Data:", data);
-      console.log("🎮 DEBUG: getGameById query result - Error:", error);
-
       if (error) {
-        console.error("❌ DEBUG: Error fetching game by ID:", error);
+        console.error("❌ DEBUG: Error fetching game by ID from view:", error);
         return null;
       }
 
-      console.log(
-        "✅ DEBUG: getGameById returning game:",
-        data?.title || "unknown",
-      );
+      console.log("✅ DEBUG: getGameById returning game from view:", data?.title || "unknown");
       return data;
     } catch (error) {
       console.error("Error in getGameById:", error);
@@ -220,6 +232,20 @@ export class GameService {
    */
   static async getGameByRobloxId(robloxId: string): Promise<Game | null> {
     try {
+      // First try the `games` table directly (respect manual edits)
+      const { data: gameData, error: gameError } = await supabase
+        .from("games")
+        .select("*")
+        .eq("roblox_id", robloxId)
+        .single();
+
+      if (gameError) {
+        console.warn("🎮 WARN: Error fetching from games table by roblox_id:", gameError);
+      }
+
+      if (gameData) return gameData as any;
+
+      // Fallback to the view
       const { data, error } = await supabase
         .from("games_with_ratings")
         .select("*")
@@ -228,7 +254,7 @@ export class GameService {
         .single();
 
       if (error) {
-        console.error("Error fetching game by Roblox ID:", error);
+        console.error("Error fetching game by Roblox ID from view:", error);
         return null;
       }
 
