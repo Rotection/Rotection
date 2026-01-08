@@ -286,7 +286,15 @@ const Games = () => {
                   className="animate-fade-in"
                   style={{ animationDelay: `${(index + 2) * 0.05}s` }}
                 >
-                  <GameCard {...game} />
+                  <GameCard
+                    {...game}
+                    imageUrl={
+                      // prefer API field `imageUrl`, fallback to DB `thumbnail_url`
+                      // game may have different casing depending on source
+                      (game as any).imageUrl || (game as any).thumbnail_url ||
+                      (game as any).thumbnailUrl || ""
+                    }
+                  />
                 </div>
               ))}
             </div>

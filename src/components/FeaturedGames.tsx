@@ -120,7 +120,13 @@ export function FeaturedGames() {
                 className="animate-fade-in"
                 style={{ animationDelay: `${(index + 1) * 0.1}s` }}
               >
-                <GameCard {...game} />
+                <GameCard
+                  {...game}
+                  imageUrl={
+                    (game as any).imageUrl || (game as any).thumbnail_url ||
+                    (game as any).thumbnailUrl || ""
+                  }
+                />
               </div>
             ))}
           </div>

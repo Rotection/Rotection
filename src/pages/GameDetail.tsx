@@ -335,7 +335,9 @@ const GameDetail = () => {
               {/* Hero Image */}
               <div className="relative rounded-2xl overflow-hidden animate-fade-in">
                 <img
-                  src={gameData.imageUrl}
+                  src={
+                    gameData.imageUrl || gameData.thumbnail_url || gameData.thumbnailUrl || ""
+                  }
                   alt={gameData.title}
                   className="w-full aspect-video object-cover"
                 />
