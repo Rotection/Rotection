@@ -63,9 +63,17 @@ const Games = () => {
           Object.keys(import.meta.env).filter((key) => key.startsWith("VITE_")),
         );
 
+        // Helper: timeout wrapper for potentially hanging network calls
+        const withTimeout = async <T,>(p: Promise<T>, ms = 10000): Promise<T> => {
+          const timeout = new Promise<never>((_, rej) =>
+            setTimeout(() => rej(new Error("Request timed out")), ms),
+          );
+          return Promise.race([p, timeout]) as Promise<T>;
+        };
+
         // Load genres
         console.log("🔍 DEBUG: Loading genres...");
-        const genreList = await GameService.getGenres();
+        const genreList = await withTimeout(GameService.getGenres(), 10000);
         console.log("🔍 DEBUG: Genres loaded:", genreList);
 
         // Only set genres if we got valid data, avoid duplicating "All Genres"
@@ -75,19 +83,22 @@ const Games = () => {
           setGenres(["All Genres"]);
         }
 
-        // Load all games
+        // Load all games (with timeout to avoid indefinite loading)
         console.log("🔍 DEBUG: Loading games with filters:", {
           search: searchQuery,
           genre: selectedGenre,
           verifiedOnly: showVerifiedOnly,
           sortBy: sortBy,
         });
-        const allGames = await GameService.getAllGames({
-          search: searchQuery,
-          genre: selectedGenre,
-          verifiedOnly: showVerifiedOnly,
-          sortBy: sortBy as any,
-        });
+        const allGames = await withTimeout(
+          GameService.getAllGames({
+            search: searchQuery,
+            genre: selectedGenre,
+            verifiedOnly: showVerifiedOnly,
+            sortBy: sortBy as any,
+          }),
+          10000,
+        );
 
         console.log("🔍 DEBUG: Games loaded:", allGames.length, "games");
         console.log("🔍 DEBUG: First game:", allGames[0]);
@@ -117,12 +128,22 @@ const Games = () => {
           sortBy: sortBy,
         });
 
-        const filteredGames = await GameService.getAllGames({
-          search: searchQuery,
-          genre: selectedGenre,
-          verifiedOnly: showVerifiedOnly,
-          sortBy: sortBy as any,
-        });
+        const withTimeout = async <T,>(p: Promise<T>, ms = 10000): Promise<T> => {
+          const timeout = new Promise<never>((_, rej) =>
+            setTimeout(() => rej(new Error("Request timed out")), ms),
+          );
+          return Promise.race([p, timeout]) as Promise<T>;
+        };
+
+        const filteredGames = await withTimeout(
+          GameService.getAllGames({
+            search: searchQuery,
+            genre: selectedGenre,
+            verifiedOnly: showVerifiedOnly,
+            sortBy: sortBy as any,
+          }),
+          10000,
+        );
 
         console.log(
           "🔍 DEBUG: Filtered games result:",
