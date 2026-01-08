@@ -742,6 +742,58 @@ export class GameService {
   }
 
   /**
+   * Refresh Roblox metadata (thumbnail and total plays) for a game by roblox_id
+   */
+  static async refreshRobloxMetadata(
+    robloxId: string,
+  ): Promise<{ success: boolean; message?: string }> {
+    try {
+      if (!robloxId) return { success: false, message: "No robloxId provided" };
+
+      console.log("🎮 INFO: refreshRobloxMetadata called for", robloxId);
+
+      const [gameInfo, thumbnail] = await Promise.all([
+        RobloxApiService.fetchGameInfo(robloxId),
+        RobloxApiService.fetchGameThumbnail(robloxId),
+      ]);
+
+      const updates: Record<string, any> = {};
+      if (thumbnail) updates.thumbnail_url = thumbnail;
+      if (gameInfo && typeof gameInfo.visits === "number") {
+        updates.total_plays = String(gameInfo.visits);
+      }
+
+      if (Object.keys(updates).length === 0) {
+        console.warn("🎮 WARN: Nothing to update for", robloxId);
+        return { success: false, message: "No fields to update" };
+      }
+
+      const { data, error } = await supabase
+        .from("games")
+        .update(updates)
+        .eq("roblox_id", robloxId)
+        .select();
+
+      if (error) {
+        console.error("❌ ERROR: Supabase update failed for", robloxId, error);
+        return { success: false, message: error.message || "Update failed" };
+      }
+
+      console.log(
+        "✅ INFO: Successfully refreshed Roblox metadata for",
+        robloxId,
+        "rowsAffected:",
+        Array.isArray(data) ? data.length : data ? 1 : 0,
+      );
+
+      return { success: true, message: "Metadata refreshed" };
+    } catch (err) {
+      console.error("❌ ERROR: Exception in refreshRobloxMetadata for", robloxId, err);
+      return { success: false, message: String(err) };
+    }
+  }
+
+  /**
    * Helper function to format rating display
    */
   static formatRating(rating: number): string {
