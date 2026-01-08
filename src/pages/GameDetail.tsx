@@ -20,6 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { toast } from "@/hooks/use-toast";
+import { GameService } from "@/services/gameService";
 import { useAuthContext } from "@/contexts/AuthContext";
 import {
   Dialog,
