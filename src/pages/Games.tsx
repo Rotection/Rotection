@@ -47,15 +47,15 @@ const Games = () => {
         );
         console.log(
           "🔍 DEBUG: Has Anon Key:",
-          !!import.meta.env.VITE_SUPABASE_ANON_KEY,
+          !!import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         );
         console.log(
           "🔍 DEBUG: Anon Key Length:",
-          import.meta.env.VITE_SUPABASE_ANON_KEY?.length || 0,
+          import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY?.length || 0,
         );
         console.log(
           "🔍 DEBUG: Anon Key First 20 chars:",
-          import.meta.env.VITE_SUPABASE_ANON_KEY?.substring(0, 20) ||
+          import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY?.substring(0, 20) ||
             "undefined",
         );
         console.log(
