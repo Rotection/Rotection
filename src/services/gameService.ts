@@ -87,6 +87,20 @@ export interface GameSubmission {
   updated_at?: string;
 }
 
+// Small helper to add a timeout to Supabase queries to avoid the UI hanging
+function withTimeout<T>(p: Promise<T>, ms = 8000): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error("Request timed out")), ms);
+    p.then((v) => {
+      clearTimeout(timer);
+      resolve(v);
+    }).catch((e) => {
+      clearTimeout(timer);
+      reject(e);
+    });
+  });
+}
+
 export class GameService {
   /**
    * Get all approved games with optional filtering
@@ -163,14 +177,51 @@ export class GameService {
       }
 
       console.log("🎮 DEBUG: Executing query...");
-      const { data, error } = await query;
+      let data: any = null;
+      let error: any = null;
+
+      try {
+        const res = await withTimeout(query, 8000) as any;
+        data = res.data;
+        error = res.error;
+      } catch (e) {
+        console.error("❌ DEBUG: getAllGames query timed out or failed:", e);
+        // Fallback: try reading directly from public.games without the view filters
+        try {
+          const { data: fallbackData, error: fallbackError } = await supabase
+            .from("games")
+            .select("*")
+            .order("rating_count", { ascending: false })
+            .limit(filters?.limit || 50);
+
+          if (fallbackError) {
+            console.error("❌ DEBUG: fallback games query failed:", fallbackError);
+            return [];
+          }
+
+          return fallbackData || [];
+        } catch (fallbackErr) {
+          console.error("❌ DEBUG: Exception in fallback games query:", fallbackErr);
+          return [];
+        }
+      }
 
       console.log("🎮 DEBUG: Query result - Data count:", data?.length || 0);
       console.log("🎮 DEBUG: Query result - Error:", error);
 
       if (error) {
         console.error("❌ DEBUG: Error fetching games:", error);
-        return [];
+        // Try simple fallback
+        const { data: fallbackData, error: fallbackError } = await supabase
+          .from("games")
+          .select("*")
+          .order("rating_count", { ascending: false })
+          .limit(filters?.limit || 50);
+        if (fallbackError) {
+          console.error("❌ DEBUG: fallback games query failed:", fallbackError);
+          return [];
+        }
+        return fallbackData || [];
       }
 
       console.log("🎮 DEBUG: Returning games:", data?.length || 0);
@@ -655,12 +706,30 @@ export class GameService {
   static async getGenres(): Promise<string[]> {
     try {
       console.log("🎮 DEBUG: GameService.getGenres called");
+      let data: any = null;
+      let error: any = null;
 
-      const { data, error } = await supabase
-        .from("games")
-        .select("genre")
-        .eq("status", "approved")
-        .not("genre", "is", null);
+      try {
+        const res = await withTimeout(
+          supabase.from("games").select("genre").eq("status", "approved").not("genre", "is", null),
+          5000,
+        ) as any;
+        data = res.data;
+        error = res.error;
+      } catch (e) {
+        console.error("❌ DEBUG: getGenres timed out or failed:", e);
+        // fallback to a simple select without status filter
+        const { data: fallbackData, error: fallbackError } = await supabase
+          .from("games")
+          .select("genre")
+          .not("genre", "is", null);
+        if (fallbackError) {
+          console.error("❌ DEBUG: fallback getGenres failed:", fallbackError);
+          return ["All Genres"];
+        }
+        const genres = [...new Set(fallbackData?.map((g) => g.genre).filter(Boolean))];
+        return ["All Genres", ...genres.sort()];
+      }
 
       console.log(
         "🎮 DEBUG: getGenres query result - Data:",

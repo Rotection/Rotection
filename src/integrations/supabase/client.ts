@@ -6,14 +6,18 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 // #region agent log
-fetch('http://127.0.0.1:7242/ingest/edd1edcc-d15d-43a6-9166-0f43d8e0a0e0',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'client.ts:5',message:'Supabase env vars check',data:{url:SUPABASE_URL?`${SUPABASE_URL.substring(0,20)}...`:'undefined',key:SUPABASE_PUBLISHABLE_KEY?`${SUPABASE_PUBLISHABLE_KEY.substring(0,10)}...`:'undefined'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+  fetch('http://127.0.0.1:7242/ingest/edd1edcc-d15d-43a6-9166-0f43d8e0a0e0',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'client.ts:5',message:'Supabase env vars check',data:{url:SUPABASE_URL?`${SUPABASE_URL.substring(0,20)}...`:'undefined',key:SUPABASE_PUBLISHABLE_KEY?`${SUPABASE_PUBLISHABLE_KEY.substring(0,10)}...`:'undefined'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+}
 // #endregion
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
 // #region agent log
-fetch('http://127.0.0.1:7242/ingest/edd1edcc-d15d-43a6-9166-0f43d8e0a0e0',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'client.ts:11',message:'Creating Supabase client',data:{hasUrl:!!SUPABASE_URL,hasKey:!!SUPABASE_PUBLISHABLE_KEY},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+  fetch('http://127.0.0.1:7242/ingest/edd1edcc-d15d-43a6-9166-0f43d8e0a0e0',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'client.ts:11',message:'Creating Supabase client',data:{hasUrl:!!SUPABASE_URL,hasKey:!!SUPABASE_PUBLISHABLE_KEY},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+}
 // #endregion
 
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
@@ -25,5 +29,7 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
 });
 
 // #region agent log
-fetch('http://127.0.0.1:7242/ingest/edd1edcc-d15d-43a6-9166-0f43d8e0a0e0',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'client.ts:18',message:'Supabase client created',data:{clientExists:!!supabase},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+  fetch('http://127.0.0.1:7242/ingest/edd1edcc-d15d-43a6-9166-0f43d8e0a0e0',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'client.ts:18',message:'Supabase client created',data:{clientExists:!!supabase},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+}
 // #endregion

@@ -1,5 +1,6 @@
 import { Shield, Star, Users } from "lucide-react";
 import { Link } from "react-router-dom";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 interface GameCardProps {
   id: string;

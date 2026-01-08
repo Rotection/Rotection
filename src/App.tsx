@@ -16,21 +16,19 @@ import GameDetail from "./pages/GameDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
-
 // #region agent log
-fetch("http://127.0.0.1:7242/ingest/edd1edcc-d15d-43a6-9166-0f43d8e0a0e0", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    location: "App.tsx:14",
-    message: "App component rendering",
-    data: { pathname: window.location.pathname },
-    timestamp: Date.now(),
-    sessionId: "debug-session",
-    runId: "run1",
-    hypothesisId: "A",
-  }),
-}).catch(() => {});
+if (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
+  fetch("http://127.0.0.1:7242/ingest/edd1edcc-d15d-43a6-9166-0f43d8e0a0e0", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      location: "App.tsx",
+      message: "App mount",
+      data: { pathname: typeof window !== "undefined" ? window.location.pathname : "" },
+      timestamp: Date.now(),
+    }),
+  }).catch(() => {});
+}
 // #endregion
 
 const App = () => (
@@ -44,10 +42,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
-              <Route
-                path="/auth/roblox/callback"
-                element={<RobloxCallback />}
-              />
+              <Route path="/auth/roblox/callback" element={<RobloxCallback />} />
               <Route path="/tos" element={<TermsOfService />} />
               <Route path="/pp" element={<PrivacyPolicy />} />
               <Route path="/submit" element={<Submit />} />

@@ -334,13 +334,13 @@ const GameDetail = () => {
             <div className="lg:col-span-2 space-y-8">
               {/* Hero Image */}
               <div className="relative rounded-2xl overflow-hidden animate-fade-in">
-                <img
-                  src={
-                    gameData.imageUrl || gameData.thumbnail_url || gameData.thumbnailUrl || ""
-                  }
-                  alt={gameData.title}
-                  className="w-full aspect-video object-cover"
-                />
+                  <img
+                    src={
+                      gameData.imageUrl || gameData.thumbnail_url || gameData.thumbnailUrl || ""
+                    }
+                    alt={gameData.title}
+                    className="w-full aspect-video object-cover"
+                  />
                 {gameData.verified && (
                   <div className="absolute top-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-full flex items-center gap-2 font-medium">
                     <Shield className="w-5 h-5" />
