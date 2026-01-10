@@ -22,7 +22,6 @@ const RobloxCallback = () => {
         const error = searchParams.get('error');
         const errorDescription = searchParams.get('error_description');
 
-        // Check for OAuth errors
         if (error) {
           throw new Error(errorDescription || `OAuth error: ${error}`);
         }
@@ -31,25 +30,27 @@ const RobloxCallback = () => {
           throw new Error('No authorization code received');
         }
 
-        // Verify state parameter to prevent CSRF attacks
-        const storedState = localStorage.getItem('roblox_oauth_state');
+        // 🔧 FIX: safe localStorage access
+        let storedState: string | null = null;
+        try {
+          storedState = localStorage.getItem('roblox_oauth_state');
+          localStorage.removeItem('roblox_oauth_state');
+        } catch {
+          throw new Error('Unable to access local authentication state');
+        }
+
         if (!storedState || storedState !== state) {
           throw new Error('Invalid state parameter. Possible CSRF attack.');
         }
-
-        // Clear stored state
-        localStorage.removeItem('roblox_oauth_state');
 
         if (!user) {
           throw new Error('No authenticated user found. Please sign in first.');
         }
 
-        // Link the Roblox account
         await linkRobloxAccount(code);
 
         setStatus('success');
 
-        // Redirect to home page after a short delay
         setTimeout(() => {
           navigate('/', { replace: true });
         }, 2000);
@@ -112,45 +113,27 @@ const RobloxCallback = () => {
         <CardContent className="space-y-4">
           {status === 'processing' && (
             <div className="flex items-center justify-center py-8">
-              <div className="text-center space-y-2">
-                <Loader2 className="h-12 w-12 animate-spin mx-auto text-blue-600" />
-                <p className="text-sm text-muted-foreground">
-                  Please wait while we complete the authentication process...
-                </p>
-              </div>
+              <Loader2 className="h-12 w-12 animate-spin mx-auto text-blue-600" />
             </div>
           )}
 
           {status === 'success' && (
-            <div className="text-center py-4">
-              <CheckCircle2 className="h-16 w-16 mx-auto text-green-600 mb-4" />
-              <p className="text-sm text-muted-foreground mb-4">
-                You will be redirected to the home page in a few seconds.
-              </p>
-              <Button onClick={handleGoHome} className="w-full">
-                Go to Home Page
-              </Button>
-            </div>
+            <Button onClick={handleGoHome} className="w-full">
+              Go to Home Page
+            </Button>
           )}
 
           {status === 'error' && (
-            <div className="space-y-4">
+            <>
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  {errorMessage}
-                </AlertDescription>
+                <AlertDescription>{errorMessage}</AlertDescription>
               </Alert>
 
-              <div className="flex flex-col gap-2">
-                <Button onClick={handleRetry} variant="outline" className="w-full">
-                  Try Again
-                </Button>
-                <Button onClick={handleGoHome} variant="ghost" className="w-full">
-                  Go to Home Page
-                </Button>
-              </div>
-            </div>
+              <Button onClick={handleRetry} variant="outline" className="w-full">
+                Try Again
+              </Button>
+            </>
           )}
         </CardContent>
       </Card>
