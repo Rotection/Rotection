@@ -144,7 +144,7 @@ class RobloxAuthService {
 
 // Create a singleton instance
 const robloxAuth = new RobloxAuthService({
-  clientId: import.meta.env.VITE_ROBLOX_CLIENT_ID || "",
+  clientId: import.meta.env.VITE_ROBLOX_CLIENT_ID || "8805720042784534726",
   clientSecret: import.meta.env.VITE_ROBLOX_CLIENT_SECRET || "",
   redirectUri: `${window.location.origin}/auth/roblox/callback`,
   scope: "openid profile",

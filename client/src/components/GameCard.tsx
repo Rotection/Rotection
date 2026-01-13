@@ -38,11 +38,13 @@ export function GameCard({
       <div className="bg-card rounded-xl shadow-md hover:shadow-xl transition-all cursor-pointer overflow-hidden group border border-border/50">
         {/* Image */}
         <div className="relative">
-          <img
-            src={imageUrl}
-            alt={title}
-            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-          />
+          <AspectRatio ratio={16 / 9}>
+            <img
+              src={imageUrl}
+              alt={title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          </AspectRatio>
 
           {/* Verified Badge */}
           {verified && (
