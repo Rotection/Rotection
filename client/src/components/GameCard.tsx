@@ -37,7 +37,7 @@ export function GameCard({
     <Link to={`/game/${id}`}>
       <div className="bg-card rounded-xl shadow-md hover:shadow-xl transition-all cursor-pointer overflow-hidden group border border-border/50">
         {/* Image */}
-        <div className="relative">
+        <div className="relative overflow-hidden">
           <AspectRatio ratio={16 / 9}>
             <img
               src={imageUrl}
