@@ -34,7 +34,7 @@ export function GameCard({
   };
 
   return (
-    <Link to={`/game/${id}`}>
+    <Link to={`/game/${id}`} data-testid={`card-game-${id}`}>
       <div className="bg-card rounded-xl shadow-md hover:shadow-xl transition-all cursor-pointer overflow-hidden group border border-border/50">
         {/* Image */}
         <div className="relative overflow-hidden">
@@ -43,6 +43,7 @@ export function GameCard({
               src={imageUrl}
               alt={title}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              data-testid={`img-game-thumbnail-${id}`}
             />
           </AspectRatio>
 

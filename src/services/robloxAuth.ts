@@ -50,6 +50,14 @@ class RobloxAuthService {
     refresh_token: string;
     scope: string;
   }> {
+    console.log("🔑 Roblox Auth: Exchanging code for token...", {
+      clientId: this.config.clientId,
+      redirectUri: this.config.redirectUri,
+      hasSecret: !!this.config.clientSecret
+    });
+
+    // NOTE: This will likely fail due to CORS if called from the browser.
+    // Roblox OAuth token exchange MUST happen on a secure backend server.
     const response = await fetch(`${this.baseUrl}/oauth/v1/token`, {
       method: "POST",
       headers: {
