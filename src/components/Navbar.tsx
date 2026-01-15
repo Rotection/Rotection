@@ -131,11 +131,16 @@ export function Navbar() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="rounded-full gap-2">
                   <User className="h-4 w-4" />
-                  {user.user_metadata?.username || user.email?.split('@')[0]}
+                  <span className="max-w-[100px] truncate">
+                    {user.user_metadata?.username || user.email?.split('@')[0]}
+                  </span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={handleLogout} className="gap-2">
+                <DropdownMenuItem className="text-xs text-muted-foreground pointer-events-none">
+                  {user.email}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout} className="gap-2 text-red-500 focus:text-red-500">
                   <LogOut className="h-4 w-4" />
                   Logout
                 </DropdownMenuItem>
