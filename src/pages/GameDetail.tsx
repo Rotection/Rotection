@@ -267,10 +267,10 @@ const GameDetail = () => {
           type="button"
           disabled={readonly}
           onClick={() => onChange?.(star)}
-          className={`transition-colors ${readonly ? "cursor-default" : "cursor-pointer hover:scale-110"}`}
+          className={`transition-all duration-200 ${readonly ? "cursor-default" : "cursor-pointer hover:scale-125 active:scale-95"}`}
         >
           <Star
-            className={`w-5 h-5 ${star <= value ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`}
+            className={`w-5 h-5 ${star <= value ? "text-yellow-400 fill-yellow-400 drop-shadow-[0_0_2px_rgba(250,204,21,0.5)]" : "text-gray-300 hover:text-yellow-200"}`}
           />
         </button>
       ))}

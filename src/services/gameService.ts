@@ -162,7 +162,7 @@ export class GameService {
         }
       } else {
         // Default sort by rating count
-        query = query.order("rating_count", { ascending: false });
+        query = query.order("rating_count", { ascending: false, nullsFirst: false });
       }
 
       // Apply pagination
