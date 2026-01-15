@@ -58,13 +58,15 @@ class RobloxAuthService {
 
     // NOTE: This will likely fail due to CORS if called from the browser.
     // Roblox OAuth token exchange MUST happen on a secure backend server.
-    const response = await fetch(`${this.baseUrl}/oauth/v1/token`, {
+    // Using a proxy for debugging, but this should be moved to a secure backend.
+    const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(`${this.baseUrl}/oauth/v1/token`)}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
-        Authorization: `Basic ${btoa(`${this.config.clientId}:${this.config.clientSecret}`)}`,
       },
       body: new URLSearchParams({
+        client_id: this.config.clientId,
+        client_secret: this.config.clientSecret,
         grant_type: "authorization_code",
         code,
         redirect_uri: this.config.redirectUri,
@@ -154,7 +156,7 @@ class RobloxAuthService {
 const robloxAuth = new RobloxAuthService({
   clientId: import.meta.env.VITE_ROBLOX_CLIENT_ID || "8805720042784534726",
   clientSecret: import.meta.env.VITE_ROBLOX_CLIENT_SECRET || "",
-  redirectUri: `${window.location.origin}/auth/roblox/callback`,
+  redirectUri: `${window.location.origin}/auth`,
   scope: "openid profile",
 });
 

@@ -52,6 +52,36 @@ const Auth = () => {
   const [showUsernameDialog, setShowUsernameDialog] = useState(false);
 
   useEffect(() => {
+    // Handle Roblox OAuth callback
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    const state = params.get("state");
+    const savedState = localStorage.getItem("roblox_oauth_state");
+
+    if (code && state === savedState) {
+      const finishRobloxLogin = async () => {
+        setIsLoading(true);
+        try {
+          await linkRobloxAccount(code);
+          toast({
+            title: "Success",
+            description: "Roblox account connected!",
+          });
+        } catch (error: any) {
+          toast({
+            title: "Roblox Login Failed",
+            description: error.message || "Failed to exchange code",
+            variant: "destructive",
+          });
+        } finally {
+          setIsLoading(false);
+          // Clean up URL
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      };
+      finishRobloxLogin();
+    }
+
     // If user is authenticated and has a username, redirect to home
     if (user && profile?.username) {
       navigate("/");
@@ -62,7 +92,7 @@ const Auth = () => {
     if (user && !profile?.username) {
       setShowUsernameDialog(true);
     }
-  }, [user, profile, navigate]);
+  }, [user, profile, navigate, linkRobloxAccount]);
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);

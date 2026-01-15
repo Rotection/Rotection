@@ -593,14 +593,24 @@ const GameDetail = () => {
                         ),
                       )}
                       <div>
-                        <label className="text-sm font-medium mb-2 block">
-                          Review (Optional)
+                        <label className="text-sm font-medium mb-2 block flex justify-between">
+                          <span>Review (Optional)</span>
+                          <span className={`text-xs ${reviewText.length > 500 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                            {reviewText.length}/500
+                          </span>
                         </label>
                         <Textarea
-                          placeholder="Share your experience with this game..."
+                          placeholder="Share your experience with this game... (Press Enter to submit)"
                           value={reviewText}
-                          onChange={(e) => setReviewText(e.target.value)}
+                          onChange={(e) => setReviewText(e.target.value.slice(0, 500))}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                              e.preventDefault();
+                              handleSubmitRating();
+                            }
+                          }}
                           rows={3}
+                          autoFocus
                         />
                       </div>
                       <Button
