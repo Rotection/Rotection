@@ -54,15 +54,34 @@ const Submit = () => {
 
     setIsSubmitting(true);
     
-    // Simulate submission
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSubmitted(true);
+    try {
+      const result = await GameService.submitGame(
+        formData.gameLink
+      );
+
+      if (result.success) {
+        setSubmitted(true);
+        toast({
+          title: "Game Submitted!",
+          description: result.message,
+        });
+      } else {
+        toast({
+          title: "Submission Error",
+          description: result.message,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
       toast({
-        title: "Game Submitted!",
-        description: "Your game has been submitted for review. We'll notify you once it's verified.",
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
       });
-    }, 2000);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

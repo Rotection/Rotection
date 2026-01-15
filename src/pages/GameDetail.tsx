@@ -142,7 +142,7 @@ const GameDetail = () => {
 
     if (!gameData) return;
 
-    setIsLoading(true);
+    setLoading(true);
     try {
       const result = await GameService.submitRating(
         gameData.id,
@@ -197,7 +197,7 @@ const GameDetail = () => {
         variant: "destructive",
       });
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 

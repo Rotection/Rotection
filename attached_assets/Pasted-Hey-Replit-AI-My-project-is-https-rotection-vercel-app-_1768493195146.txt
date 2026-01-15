@@ -1,0 +1,47 @@
+Hey Replit AI,
+
+My project is https://rotection.vercel.app – Roblox game discovery site in Replit (Next.js/React), already connected to Supabase.
+
+The "games" table already exists. Do NOT create it. On /submit (public form, no login): collect game_title (req), game_url (req), developer, genre, description, thumbnail_url (opt), submitter_email (opt) → insert into "games" with verified = false and status = 'in review'. Show success/error messages.
+
+Now add user authentication + comments/ratings for logged-in users.
+
+DO NOT create new tables for comments or ratings.
+Instead: Search the Supabase schema / existing tables for tables that could store comments (e.g. "comments", "game_comments") and ratings (e.g. "ratings", "game_ratings", "reviews").
+If such tables exist, use them.
+If they don't exist, tell me in instructions so I can create them manually — do NOT generate create table code.
+
+Assumed schema if tables exist:
+- comments: id, created_at, game_id (ref games.id), user_id (ref auth.users.id), content, parent_id (opt)
+- ratings: id, created_at, game_id (ref games.id), user_id (ref auth.users.id), rating (int 1-5), UNIQUE(game_id, user_id)
+
+1. Use Supabase Auth (email/password + magic links)
+   - Simple login/signup (pages or modal)
+   - Show user status, logout
+
+2. RLS policies (give exact SQL if needed, but assume I’ll apply):
+   - comments/ratings: authenticated INSERT/UPDATE own only (auth.uid() = user_id)
+
+3. On game detail page (assume /game/[id] or create minimal):
+   - Fetch and show average rating from ratings table
+   - Fetch and list comments from comments table (by game_id, ordered)
+   - Comment form (textarea) – logged-in only → insert into comments with user_id
+   - Star rating (1-5) – logged-in only → insert/upsert into ratings table for current user/game
+
+4. Supabase client: use existing or create helper, read env vars (SUPABASE_URL, SUPABASE_ANON_KEY)
+
+SAVE CREDITS / TOKENS MAXIMUM:
+- Be extremely concise
+- Reuse existing code/files as much as possible
+- Only add minimal changes/new components
+- No full rewrites
+- No unnecessary explanations
+- Only generate code that is strictly needed
+
+Provide:
+- Updated submission handler
+- Auth components/logic
+- Comment + rating fetch + submit code
+- Instructions to check existing tables and apply RLS
+
+Install deps if missing. Make secure, simple, UX-friendly. Thanks!

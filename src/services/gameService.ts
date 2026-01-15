@@ -469,33 +469,29 @@ export class GameService {
   }
 
   /**
-   * Submit a new game for approval
+   * Submit a game for review
    */
   static async submitGame(
     robloxUrl: string,
-    submitterId: string,
-    userEmail?: string,
-    userName?: string,
+    submitterEmail?: string,
   ): Promise<{ success: boolean; message: string; submissionId?: string }> {
     try {
-      // Validate Roblox URL
-      if (!RobloxApiService.isValidRobloxUrl(robloxUrl)) {
-        return {
-          success: false,
-          message: "Please provide a valid Roblox game URL.",
-        };
-      }
-
+      // Extract Roblox ID from URL
       const robloxId = RobloxApiService.extractGameId(robloxUrl);
       if (!robloxId) {
         return {
           success: false,
-          message: "Could not extract game ID from URL.",
+          message: "Invalid Roblox game URL. Please check the URL and try again.",
         };
       }
 
-      // Check if game already exists
-      const existingGame = await this.getGameByRobloxId(robloxId);
+      // Check if game already exists in games table
+      const { data: existingGame } = await supabase
+        .from("games")
+        .select("id")
+        .eq("roblox_id", robloxId)
+        .single();
+
       if (existingGame) {
         return {
           success: false,
@@ -503,49 +499,27 @@ export class GameService {
         };
       }
 
-      // Check if there's already a pending submission
-      const { data: existingSubmission } = await supabase
-        .from("game_submissions")
-        .select("id")
-        .eq("roblox_id", robloxId)
-        .eq("status", "pending")
-        .single();
-
-      if (existingSubmission) {
-        return {
-          success: false,
-          message:
-            "This game has already been submitted and is pending review.",
-        };
-      }
-
       // Fetch game data from Roblox
-      const { gameInfo, thumbnail } =
-        await RobloxApiService.getGameData(robloxUrl);
+      const { gameInfo, thumbnail } = await RobloxApiService.getGameData(robloxUrl);
 
-      // Insert submission
-      const submissionData: Partial<GameSubmission> = {
+      // Insert directly into games table as requested
+      const gameData: any = {
         roblox_url: robloxUrl,
         roblox_id: robloxId,
-        submitter_id: submitterId,
+        verified: false,
+        status: 'pending',
+        title: gameInfo?.name || "Unknown Game",
+        developer: gameInfo?.creator.name || "Unknown Developer",
+        description: gameInfo ? RobloxApiService.formatDescription(gameInfo.description) : null,
+        genre: gameInfo?.genre || "Unknown",
+        thumbnail_url: thumbnail,
+        total_plays: gameInfo ? String(gameInfo.visits) : "0",
+        age_rating: "All Ages", // Default
       };
 
-      if (gameInfo) {
-        submissionData.title = gameInfo.name;
-        submissionData.developer = gameInfo.creator.name;
-        submissionData.description = RobloxApiService.formatDescription(
-          gameInfo.description,
-        );
-        submissionData.genre = gameInfo.genre;
-      }
-
-      if (thumbnail) {
-        submissionData.thumbnail_url = thumbnail;
-      }
-
       const { data, error } = await supabase
-        .from("game_submissions")
-        .insert(submissionData)
+        .from("games")
+        .insert(gameData)
         .select()
         .single();
 
@@ -557,29 +531,9 @@ export class GameService {
         };
       }
 
-      // Send email notification
-      if (userEmail && userName) {
-        try {
-          await EmailService.sendGameSubmission({
-            userEmail,
-            userName,
-            gameUrl: robloxUrl,
-            gameTitle: submissionData.title,
-            developer: submissionData.developer,
-            description: submissionData.description,
-            genre: submissionData.genre,
-            thumbnailUrl: submissionData.thumbnail_url,
-          });
-        } catch (emailError) {
-          console.error("Error sending submission email:", emailError);
-          // Don't fail the submission if email fails
-        }
-      }
-
       return {
         success: true,
-        message:
-          "Game submitted successfully! It will be reviewed by our team.",
+        message: "Game submitted successfully! It will be reviewed by our team.",
         submissionId: data.id,
       };
     } catch (error) {
